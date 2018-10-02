@@ -14,9 +14,9 @@
             $db = $database->openconnection();
             $sql = "select * from purchase_order_line  "
                     . " join user on user.StaffID=purchase_order_line.User "
-                    . "";
-            $stmt = $db->prepare($sql);
-            $stmt->execute();
+                    . "  ";
+                    $stmt=$db->prepare($sql);
+                    $stmt->execute();
             // <editor-fold defaultstate="collapsed" desc="----text Above (header = company addresses) ------">
             $this->Cell(120, 7, 'MUHABURA MULTI CHOICE COMPANY', 0, 0, 'L');
             $this->Cell(60, 7, 'DISTRICT: GASABO', 0, 0, 'L');
@@ -37,19 +37,19 @@
 // </editor-fold>
 
             $this->Cell(30, 7, 'S/N', 1, 0, 'L');
-//            $this->Cell(30, 7, 'item', 1, 0, 'L');
-//            $this->Cell(30, 7, 'measurement', 1, 0, 'L');
+           $this->Cell(30, 7, 'Date', 1, 0, 'L');
+            $this->Cell(30, 7, 'User', 1, 0, 'L');
             $this->Cell(30, 7, 'quanitity', 1, 0, 'L');
             $this->Cell(30, 7, 'cost', 1, 0, 'L');
 //            $this->Cell(30, 7, 'discount', 1, 0, 'L');
             $this->Cell(40, 7, 'amount', 1, 0, 'L');
             $this->Ln();
             $this->SetFont("Arial", '', $this->get_font());
-            while ($row = $stmt->fetch()) {
+            while ($row=$stmt->fetch()) {
                 $this->cell(30, 7, $row['purchase_order_line_id'], 1, 0, 'L');
 
-//                $this->cell(30, 7, $row['item'], 1, 0, 'L');
-//                $this->cell(30, 7, $row['measurement'], 1, 0, 'L');
+            $this->cell(30, 7, $row['entry_date '], 1, 0, 'L');
+                $this->cell(30, 7, $row['Firstname'].'  '.$row['Firstname'], 1, 0, 'L');
                 $this->cell(30, 7, $row['quantity'], 1, 0, 'L');
                 $this->cell(30, 7, $row['unit_cost'], 1, 0, 'L');
 //                $this->cell(30, 7, $row['discount'], 1, 0, 'L');
