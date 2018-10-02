@@ -1414,7 +1414,10 @@
             ?> <table>
                 <thead><tr>
                         <td> Name </td>
-                        <td> Amount </td><?php
+                        <td> Amount </td></tr>
+                        </thead>
+
+                        <?php
                         $db = new dbconnection();
                         $sql = "  select sum(total_amount) as amount,p_type_project.name  from main_stock
                         join p_budget_items on p_budget_items.p_budget_items_id=main_stock.item
@@ -1820,6 +1823,87 @@ where account_type.name='income' and journal_entry_line.entry_date>=:min_date an
         function _e($string) {
             echo htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
         }
+
+         function get_budget_Amount($type,$line)
+        {
+            $total=0 ;
+            $db = new dbconnection();
+            $sql = "SELECT  SUM (p_activity.amount) as amount from p_activity 
+                    join 
+                        p_budget_prep on p_budget_prep.p_budget_prep_id = p_activity.project 
+                    join 
+                    p_type_project on p_type_project.p_type_project_id = p_budget_prep.project_type 
+                    join 
+                       
+                      project_expectations on   project_expectations.project_expectations_id=p_activity.budget_type
+
+                    where   
+                         p_type_project.p_type_project_id='$line' 
+                         
+                         and 
+                         
+                         project_expectations.name='$type' 
+                          ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->execute();
+            while ($row = $stmt->fetch())
+            {
+               $total =$row['amount'];
+            }
+            return $total; 
+        }
+
+
+         function get_budget_report ()
+        {
+        
+           ?>  <table>
+                <thead>
+                    <tr>
+                         <td> Budget name  </td>
+                          <td> Revenues  </td>
+                           <td> Expenses  </td>
+                        <td> Profit  </td>
+                        <td> G.P Parcentage </td>
+                    </tr>
+                </thead>
+
+            <?php
+            $db = new dbconnection();
+            $sql = "SELECT  * from p_type_project   " ;
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->execute();
+            while ($row = $stmt->fetch())
+            {
+              $expense=$this->get_budget_Amount('expense',$row['p_type_project_id']);
+              $revenue=$this->get_budget_Amount('revenue',$row['p_type_project_id']);
+              $balance =$revenue-$expense;
+              $rate;
+              if ($revenue!=0)
+              {
+                $rate=$balance/$revenue;
+              }
+              else $rate=$balance;
+
+
+            ?>      <tr>
+                        <td><?php echo $row['name']; ?></td>
+                        <td><?php echo number_format($expense); ?></td>
+                        <td><?php echo number_format($revenue); ?></td>
+                        <td><?php echo number_format($balance); ?></td>
+                        <td><?php echo number_format($rate).'  %'; ?></td>
+                    </tr>
+            <?php 
+            }
+            ?>
+                </table>
+            <?php
+            
+            }
+            
+        
+
+
 
     }
     
