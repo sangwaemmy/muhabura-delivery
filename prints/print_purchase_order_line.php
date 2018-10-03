@@ -33,27 +33,26 @@
 
             $this->Ln();
             $this->Ln();
-            $this->SetFont("Arial", '', 11);
+            $this->SetFont("Arial", '', 10);
 // </editor-fold>
 
-            $this->Cell(30, 7, 'S/N', 1, 0, 'L');
-            $this->Cell(30, 7, 'Date', 1, 0, 'L');
-            $this->Cell(30, 7, 'Done by', 1, 0, 'L');
-            $this->Cell(30, 7, 'quanitity', 1, 0, 'L');
+            $this->Cell(20, 7, 'S/N', 1, 0, 'L');
+            $this->Cell(35, 7, 'Date', 1, 0, 'L');
+            $this->Cell(50, 7, 'Done by', 1, 0, 'L');
+            $this->Cell(20, 7, 'quantity', 1, 0, 'L');
             $this->Cell(30, 7, 'cost', 1, 0, 'L');
 //            $this->Cell(30, 7, 'discount', 1, 0, 'L');
-            $this->Cell(40, 7, 'amount', 1, 0, 'L');
+            $this->Cell(30, 7, 'amount', 1, 0, 'L');
             $this->Ln();
             $this->SetFont("Arial", '', $this->get_font());
             while ($row = $stmt->fetch()) {
-                $this->cell(30, 7, $row['purchase_order_line_id'], 1, 0, 'L');
-
-                $this->cell(30, 7, $row['entry_date '], 1, 0, 'L');
-                $this->cell(30, 7, $row['Firstname'] . '  ' . $row['Firstname'], 1, 0, 'L');
-                $this->cell(30, 7, $row['quantity'], 1, 0, 'L');
+                $this->cell(20, 7, $row['purchase_order_line_id'], 1, 0, 'L');
+                $this->cell(35, 7, $row['entry_date'], 1, 0, 'L');
+                $this->cell(50, 7, $row['Firstname'] . '  ' . $row['Lastname'], 1, 0, 'L');
+                $this->cell(20, 7, $row['quantity'], 1, 0, 'L');
                 $this->cell(30, 7, $row['unit_cost'], 1, 0, 'L');
-//                $this->cell(30, 7, $row['discount'], 1, 0, 'L');
-                $this->cell(40, 7, $row['amount'], 1, 0, 'L');
+//              $this->cell(30, 7, $row['discount'], 1, 0, 'L');
+                $this->cell(30, 7, $row['amount'], 1, 0, 'L');
 
 
                 $this->Ln();
@@ -79,7 +78,7 @@
     }
 
     $pdf = new PDF();
-    $pdf->SetFont('Arial', '', 13);
+    $pdf->SetFont('Arial', '', 10);
     $pdf->AddPage();
     $pdf->LoadData();
     $pdf->prepared_by();
