@@ -50,9 +50,9 @@
                 $this->cell(50, 7, $row['Firstname'] . '  ' . $row['Lastname'], 1, 0, 'L');
                 $this->cell(50, 7, $rpt->get_requester($row['p_request_id']), 1, 0, 'L');
                 $this->cell(17, 7, $row['quantity'], 1, 0, 'L');
-                $this->cell(17, 7, $row['unit_cost'], 1, 0, 'L');
+                $this->cell(17, 7, number_format($row['unit_cost']), 1, 0, 'L');
 //              $this->cell(30, 7, $row['discount'], 1, 0, 'L');
-                $this->cell(17, 7, $row['amount'], 1, 0, 'L');
+                $this->cell(17, 7, number_format($row['amount']), 1, 0, 'L');
 
 
                 $this->Ln();
