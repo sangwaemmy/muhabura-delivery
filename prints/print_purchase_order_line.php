@@ -3,18 +3,17 @@
     require_once 'Fpdf/fpdf.php';
     require_once '../web_db/connection.php';
     require_once './preppared_footer.php';
+     require_once '../web_db/Reports.php';
 
     class PDF extends FPDF {
 
 // Load data
         function LoadData() {
             // Read file lines
-
+            $rpt= new Reports ();
             $database = new dbconnection();
             $db = $database->openconnection();
-            $sql = "select * from purchase_order_line  "
-                    . " join user on user.StaffID=purchase_order_line.User "
-                    . "  ";
+            $sql = "SELECT  * from purchase_order_line  join  user on user.StaffID=purchase_order_line.User   JOIN p_request on p_request.p_request_id  purchase_order_line.request ";
             $stmt = $db->prepare($sql);
             $stmt->execute();
             // <editor-fold defaultstate="collapsed" desc="----text Above (header = company addresses) ------">
@@ -35,10 +34,10 @@
             $this->Ln();
             $this->SetFont("Arial", '', 10);
 // </editor-fold>
-
             $this->Cell(20, 7, 'S/N', 1, 0, 'L');
             $this->Cell(35, 7, 'Date', 1, 0, 'L');
             $this->Cell(50, 7, 'Done by', 1, 0, 'L');
+            $this->Cell(50, 7, 'Requested by ', 1, 0, 'L');
             $this->Cell(20, 7, 'quantity', 1, 0, 'L');
             $this->Cell(30, 7, 'cost', 1, 0, 'L');
 //            $this->Cell(30, 7, 'discount', 1, 0, 'L');
@@ -49,6 +48,7 @@
                 $this->cell(20, 7, $row['purchase_order_line_id'], 1, 0, 'L');
                 $this->cell(35, 7, $row['entry_date'], 1, 0, 'L');
                 $this->cell(50, 7, $row['Firstname'] . '  ' . $row['Lastname'], 1, 0, 'L');
+                $this->cell(50, 7, $rpt->get_requester($row['p_request_id']), 1, 0, 'L');
                 $this->cell(20, 7, $row['quantity'], 1, 0, 'L');
                 $this->cell(30, 7, $row['unit_cost'], 1, 0, 'L');
 //              $this->cell(30, 7, $row['discount'], 1, 0, 'L');
