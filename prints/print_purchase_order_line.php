@@ -3,17 +3,17 @@
     require_once 'Fpdf/fpdf.php';
     require_once '../web_db/connection.php';
     require_once './preppared_footer.php';
-     require_once '../web_db/Reports.php';
+    require_once '../web_db/Reports.php';
 
     class PDF extends FPDF {
 
 // Load data
         function LoadData() {
             // Read file lines
-            $rpt= new Reports ();
+            $rpt = new Reports ();
             $database = new dbconnection();
             $db = $database->openconnection();
-            $sql = "SELECT  * from purchase_order_line  join  user on user.StaffID=purchase_order_line.User   JOIN p_request on p_request.p_request_id  purchase_order_line.request ";
+            $sql = "SELECT  * from purchase_order_line  join  user on user.StaffID=purchase_order_line.User   JOIN p_request on p_request.p_request_id = purchase_order_line.request ";
             $stmt = $db->prepare($sql);
             $stmt->execute();
             // <editor-fold defaultstate="collapsed" desc="----text Above (header = company addresses) ------">
