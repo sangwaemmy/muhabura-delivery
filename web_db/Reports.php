@@ -1878,5 +1878,17 @@ where account_type.name='income' and journal_entry_line.entry_date>=:min_date an
             <?php
         }
 
+        function get_requester($Id)
+            {
+            $names='';
+            $db = new dbconnection();
+            $sql = "SELECT * FROM p_request  join  user  on user.StaffID =p_request.User  where p_request.p_request_id = '" . $Id . "'  ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $names= $row['Firstname'].'  '.$row['Lastname'];
+            return $names;
+            }
+
     }
     
