@@ -1,7 +1,6 @@
 <?php
     session_start();
     require_once '../web_db/multi_values.php';
-    require_once './navigation/extra_sub_menus.php';
     if (!isset($_SESSION)) {
         session_start();
     }if (!isset($_SESSION['login_token'])) {
@@ -46,8 +45,10 @@
                         $unit_c = (!empty($dc['unit_c'])) ? $dc['unit_c'] : 0;
                         $amount = $unit_c * $quantity;
                         $request_no = '';
-                        $status = 'not_approved';
-                        $newobj->new_p_request($item, filter_var($quantity, FILTER_SANITIZE_NUMBER_INT), filter_var($unit_c, FILTER_SANITIZE_NUMBER_INT), filter_var($amount, FILTER_SANITIZE_NUMBER_INT), $entry_date, $user, $dc['measurement'], $request_no, $last_req, $status, $field);
+                        $status = 0;
+                        $DAF ="";
+                        $DG  ="";
+                        $newobj->new_p_request($item, filter_var($quantity, FILTER_SANITIZE_NUMBER_INT), filter_var($unit_c, FILTER_SANITIZE_NUMBER_INT), filter_var($amount, FILTER_SANITIZE_NUMBER_INT), $entry_date, $user, $dc['measurement'], $request_no, $last_req, $field,$status,$DAF,$DG);
 //                        $m = new multi_values();
 //                        $last_header = $m->get_last_journal_entry_header();
 //                        $newobj->new_journal_entry_line($dc['Account'], $switch_dc, $amount, $dc['memo'], $last_header);
@@ -71,7 +72,6 @@
         <link href="web_style/StylesAddon.css" rel="stylesheet" type="text/css"/>
         <link href="admin_style.css" rel="stylesheet" type="text/css"/>
         <link href="admin_style.css" rel="stylesheet" type="text/css"/> 
-        <link href="web_style/financial_rep.css" rel="stylesheet" type="text/css"/>
         <meta name="viewport" content="width=device-width, initial scale=1.0"/>
         <style>
             .journal_entry_table thead{
@@ -252,7 +252,7 @@
             <div class="parts no_shade_noBorder xx_titles no_bg whilte_text dataList_title">Requests </div>
             <?php
                 save_request();
-
+                // <editor-fold defaultstate="collapsed" desc="--paging init---">
                 if (isset($_POST['prev'])) {
                     $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] -= 1);
                     $last = ($_SESSION['page'] > 1) ? $_SESSION['page'] * 30 : 30;
@@ -275,51 +275,27 @@
                 } else {
                     $first = 0;
                 }
-                $menu = new extra_sub_menus();
-                $menu->get_request();
-            ?>
-            <div class="parts no_paddin_shade_no_Border page_pane" id="page_pane1">
 
-                <?php
-                    // <editor-fold defaultstate="collapsed" desc="--paging init---">
 // </editor-fold>
-                    $obj = new multi_values();
-                    $first = $obj->get_first_p_budget();
-//                     
-                    $obj->list_p_request($first)
-                ?>
-                <div class="parts no_paddin_shade_no_Border eighty_centered no_bg">
-                    <table>
-                        <td>
-                            <form action="../web_exports/excel_export.php" method="post">
-                                <input type="hidden" name="p_request" value="a"/>
-                                <input type="submit" name="export" class="btn_export btn_export_excel" value="Export"/>
-                            </form>
-                        </td>
-                        <td>
-                            <form action="../prints/print_p_request.php" target="blank" method="post">
-                                <input type="submit" name="export" class="btn_export btn_export_pdf" value="Export"/>
-                            </form>
-                        </td></table>
-                </div>
-            </div> 
-            <div class="parts no_paddin_shade_no_Border page_pane off" id="page_pane2">
-                <?php
-                    $ot = new other_fx();
-                    $ot->list_requests_by_field();
-                ?>
-                <div class="parts full_center_two_h heit_free no_paddin_shade_no_Border top_off_xx">
-                    <form action="../print_more_reports/print_all_requests.php" target="blank" method="post">
-                        <input type="hidden" name="start_date" value="<?php // echo $this->get_this_year_start_date();   ?>"/>
-                        <input type="hidden" name="end_date" value="<?php // echo $this->get_this_year_end_date();   ?>"/>
-                        <input type="hidden" name="field_id" value="<?php // echo $row['p_field_id'];   ?>"/>
-                        <input type="hidden" name="field_name" value="<?php // echo $row['field_name'];   ?>"/>
-                        <input type="submit" name="export" class="btn_export  btn_export_pdf margin_free" value="Export"/>
+                $obj = new multi_values();
+                $first = $obj->get_first_p_budget();
+                echo 'Now date: ' . date('Y-m-d H:i:s');
+                $obj->list_p_request($first)
+            ?>
+        </div>  <div class="parts no_paddin_shade_no_Border eighty_centered no_bg">
+            <table>
+                <td>
+                    <form action="../web_exports/excel_export.php" method="post">
+                        <input type="hidden" name="p_request" value="a"/>
+                        <input type="submit" name="export" class="btn_export btn_export_excel" value="Export"/>
                     </form>
-                </div>
-            </div>
+                </td>
+                <td>
+                    <form action="../prints/print_p_request.php" target="blank" method="post">
+                        <input type="submit" name="export" class="btn_export btn_export_pdf" value="Export"/>
+                    </form>
+                </td></table>
         </div>
-
         <div class="parts eighty_centered  no_paddin_shade_no_Border no_shade_noBorder check_loaded" >
             <?php require_once './navigation/add_nav.php'; ?> 
         </div>
