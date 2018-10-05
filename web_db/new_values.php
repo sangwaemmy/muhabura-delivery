@@ -922,14 +922,16 @@
             }
         }
 
-        function new_p_request($item, $quantity, $unit_cost, $amount, $entry_date, $User, $measurement, $request_no, $main_req, $status, $field) {
-            try {
+        function new_p_request($item,$quantity,$unit_cost,$amount, $entry_date, $User, $measurement, $request_no, $main_req,$field,$status,$DAF,$DG) 
+        {
+            try 
+            {
                 require_once('../web_db/connection.php');
                 $database = new dbconnection();
                 $db = $database->openConnection();
                 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $stm = $db->prepare("insert into p_request values(:p_request_id, :item,  :quantity,  :unit_cost,  :amount,  :entry_date,  :User,  :measurement,  :request_no,:main_req, :status, :field)");
-                $stm->execute(array(':p_request_id' => 0, ':item' => $item, ':quantity' => $quantity, ':unit_cost' => $unit_cost, ':amount' => $amount, ':entry_date' => $entry_date, ':User' => $User, ':measurement' => $measurement, ':request_no' => $request_no, ":main_req" => $main_req, ":status" => $status, ":field" => $field));
+                $stm = $db->prepare("insert into p_request values(:p_request_id, :item,  :quantity,  :unit_cost,  :amount,  :entry_date,  :User,  :measurement,  :request_no,:main_req,  :field,:status, :DAF,:DG)");
+                $stm->execute(array(':p_request_id' => 0, ':item' => $item, ':quantity' => $quantity, ':unit_cost' => $unit_cost, ':amount' => $amount, ':entry_date' => $entry_date, ':User' => $User, ':measurement' => $measurement, ':request_no' => $request_no, ":main_req" => $main_req,  ":field" => $field,":status" => $status,":DAF" =>$DAF,":DG" =>$DG));
             } catch (PDOException $e) {
                 echo 'Error .. ' . $e;
             }

@@ -12001,7 +12001,8 @@
                 echo $field;
             }
 
-            function get_chosen_p_users_password($id) {
+            function get_chosen_p_users_password($id) 
+            {
 
                 $db = new dbconnection();
                 $sql = "select   p_users.password from p_users where p_users_id=:p_users_id ";
@@ -12135,11 +12136,12 @@
         function list_p_request($min) {
             $database = new dbconnection();
             $db = $database->openConnection();
-            $sql = "select p_request.p_request_id,  p_request.item,  p_request.quantity,  p_request.unit_cost,  p_request.amount,  p_request.entry_date,  p_request.User,  p_request.measurement,  p_request.request_no,user.Firstname,user.Lastname ,p_budget_items.item_name as item ,p_budget_items.description, measurement.code as measurement"
+            $sql = "select p_request.status, p_request.p_request_id,  p_request.item,  p_request.quantity,  p_request.unit_cost,  p_request.amount,  p_request.entry_date,  p_request.User,  p_request.measurement,  p_request.request_no,user.Firstname,user.Lastname ,p_budget_items.item_name as item ,p_budget_items.description, measurement.code as measurement"
                     . " from p_request "
                     . " join user on user.StaffiD=p_request.User "
                     . " join p_budget_items on p_budget_items.p_budget_items_id=p_request.item"
-                    . " join measurement on measurement_id=p_request.measurement";
+                    . " join measurement on measurement_id=p_request.measurement
+                       group by p_request.main_req";
             $stmt = $db->prepare($sql);
             $stmt->execute(array(":min" => $min));
             ?>
@@ -12153,6 +12155,7 @@
                         <td> Entry Date </td><td> User </td>
                         <td> Measurement </td><td class="off"> Request Number </td>
                         <?php if (isset($_SESSION['shall_delete'])) { ?>  <td>Delete</td><td>Update</td>
+                        <td> Action </td>
                         <?php } ?>  </tr></thead>
 
                 <?php
@@ -12199,11 +12202,95 @@
                             <td>
                                 <a href="#" class="p_request_update_link" style="color: #000080;" value="
                                    <?php echo $row['p_request_id']; ?>">Update</a>
-                            </td><?php } ?></tr>
+                            </td>
+                        <?php } 
+
+
+                            if ($_SESSION['cat']=='mates' || $_SESSION['cat']=='admin' || $_SESSION['cat']=='daf')
+                                {
+                                    if($_SESSION['cat']=='daf')
+                                    {
+                                        if($row['status']==0)
+                                        {
+                                        ?>
+                                             <td>
+                                                <a href="#" class="p_request_update_link" style="color: #000080;" value="
+                                                 <?php echo $row['p_request_id']; ?>">Approve </a>
+                                            </td>
+
+                                        <?php 
+                                        }
+                                        else 
+                                        {
+                                        ?>
+                                                <td> Approved </td>
+                                       <?php 
+                                        }
+                                    }
+                                    else 
+                                    {
+
+                                      if($row['status']==1)
+                                        {
+                                        ?>
+                                             <td>
+                                               <a href="#" class="p_request_update_link" style="color: #000080;" value="
+                                                <?php echo $row['p_request_id']; ?>">Approve</a>
+                                             </td>
+                                        <?php
+                                        }
+                                        else if ($row['status']==0) 
+                                        
+                                        {
+                                        ?>
+                                            <td> Pending At DAF Office </td>
+                                        
+                                        <?php  
+                                        }
+
+                                        else if ($row['status']==2)
+                                        {
+                                            ?>
+                                                <td> Approved </td>
+
+                                        <?php }
+                                        
+                                        }
+                                    }
+                                    else 
+                                    {
+
+                                            if($row['status']==2)
+                                            {
+                                            ?>
+                                           
+                                                <td>Approved by DG</td>
+                                             <?php
+                                         }
+                                            else if ($row['status']==1)
+                                            {?>
+                                               <td>Approved by DAF, Waiting for DG Approval </td> 
+                                             <?php
+                                            }
+                                            else if ($row['status']==0)
+                                            {
+                                                ?>
+                                               <td> Waiting for DAF Approval </td>  
+                                            <?php
+                                        }
+
+                                    }        
+                            ?>
+                        </tr>
                     <?php
+
                     $pages += 1;
                 }
-                ?></table>
+
+?>
+                
+                </table>
+
                 <?php
             }
 
