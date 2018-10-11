@@ -777,7 +777,8 @@
 
                     </div>
                 </div>
-                <div class="clickable_row_table_box">            <table class="clickable_row_table ">
+                <div class="clickable_row_table_box">    
+                    <table class="clickable_row_table ">
                         <?php while ($row = $stmt->fetch()) { ?><tr> 
                                 <td>                       <tr><td><label for="det_txt_code">code</label></td><td><input type="text" id="det_txt_code"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['code']; ?>" /> </td></tr>
                             <tr><td><label for="det_txt_description">description</label></td><td><input type="text" id="det_txt_description"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['description']; ?>" /> </td></tr>
@@ -3767,7 +3768,8 @@
 
                     </div>
                 </div>
-                <div class="clickable_row_table_box">            <table class="clickable_row_table ">
+                <div class="clickable_row_table_box">    
+                    <table class="clickable_row_table ">
                         <?php while ($row = $stmt->fetch()) { ?><tr> 
                                 <td>                       <tr><td><label for="det_txt_entry_date">entry_date</label></td><td><input type="text" id="det_txt_entry_date"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['entry_date']; ?>" /> </td></tr>
                             <tr><td><label for="det_txt_User">User</label></td><td><input type="text" id="det_txt_User"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['User']; ?>" /> </td></tr>
@@ -4012,7 +4014,9 @@
                 </div>
                 <div class="clickable_row_table_box">   
                     <table class="clickable_row_table ">
-                        <?php while ($row = $stmt->fetch()) { ?><tr> 
+                        <?php
+                        while ($row = $stmt->fetch()) {
+                            ?>    <tr> 
                                 <td> <tr><td><label for="det_txt_project_type">project type</label></td><td><input type="text" id="det_txt_project_type"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['project_type']; ?>" /> </td></tr>
                             <tr><td><label for="det_txt_user">user</label></td><td><input type="text" id="det_txt_user"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php
                                     echo $row['Firstname'] . ' ';
@@ -4022,20 +4026,21 @@
                             <tr><td><label for="det_txt_budget_type">budget type</label></td><td><input type="text" id="det_txt_budget_type"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['budget_type']; ?>" /> </td></tr>
                             <tr><td><label for="det_txt_activity_desc">activity desc</label></td><td><input type="text" id="det_txt_activity_desc"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['activity_desc']; ?>" /> </td></tr>
                             <tr><td><label for="det_txt_name">name</label></td><td><input type="text" id="det_txt_name"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo $row['name']; ?>" /> </td></tr>
+                            <tr><td><label for="det_txt_name">Amount</label></td><td><input type="text" id="det_txt_name"  class="details_txt white_bg no_bg" style="min-width: 300px;"  value="<?php echo number_format($row['b_amount']); ?>" /> </td></tr>
+
                             <tr>
                                 <td colspan="2">
                                     <button class="details_send_update link_cursor push_right" data-bind="p_budget_prep">Save Changes</button>
                                 </td>
                             </tr>    <tr><td colspan="2"><a href="#" style="color: #0000ff;"> Show/Hide Activities details</a>  </td>       </tr> <tr><td colspan="2">   
-                                    <?php $this->det_by_click_type_project_sub($row['p_type_project_id']); ?>
+                                    <?php // $this->det_by_click_type_project_sub($row['p_type_project_id']);  ?>
                                 </td>   
                             </tr>
-
                         <?php } ?>
                         <tr class="off">
                             <td colspan="7">
                                 <span class="push_right data_total">
-                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                           ?>
+                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                             ?>
                                 </span>
                             </td>
                         </tr>
@@ -4118,7 +4123,7 @@
                         <tr class="off">
                             <td colspan="7">
                                 <span class="push_right data_total">
-                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                          ?>
+                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                            ?>
                                 </span>
                             </td>
                         </tr>
@@ -4194,7 +4199,7 @@
                         <tr class="off">
                             <td colspan="7">
                                 <span class="push_right data_total">
-                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                          ?>
+                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                            ?>
                                 </span>
                             </td>
                         </tr>
@@ -4280,7 +4285,7 @@
                         <tr class="off">
                             <td colspan="7">
                                 <span class="push_right data_total">
-                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                           ?>
+                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                             ?>
                                 </span>
                             </td>
                         </tr>
@@ -4367,7 +4372,7 @@
                         <tr class="off">
                             <td colspan="7">
                                 <span class="push_right data_total">
-                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));              ?>
+                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));                ?>
                                 </span>
                             </td>
                         </tr>
@@ -4462,7 +4467,7 @@
                         <tr class="off">
                             <td colspan="7">
                                 <span class="push_right data_total">
-                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));            ?>
+                                    <?php //echo 'Total ' . number_format($this->get_total_budget_line($budget_id));              ?>
                                 </span>
                             </td>
                         </tr>
@@ -4631,7 +4636,7 @@
                                             join user on p_budget_prep.user = user.StaffID 
                                             join p_type_project on p_budget_prep.project_type=p_type_project.p_type_project_id
                                             join p_activity on p_activity.project=p_budget_prep.p_budget_prep_id
-                                            where p_type_project_id=:type   ";
+                                            where p_type_project.p_type_project_id=:type   ";
             $stmt = $db->prepare($sql);
             $budget_id = $type;
             $stmt->execute(array(":type" => $type));
@@ -4720,6 +4725,66 @@
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $amount = $row['tot'];
             return $amount;
+        }
+
+        function get_request_details($main_req) {
+            try {
+                require_once('../web_db/connection.php');
+                $con = new dbconnection();
+                $db = $con->openconnection();
+                $sql = " select * from p_request where p_request.main_req=:req ";
+                $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $stmt = $db->prepare($sql);
+                $stmt->execute(array(":req" => $main_req));
+                ?> 
+                <!--this is js-->
+                <script>
+                    $('.data_details_pane_close_btn').click(function () {
+                        $('.data_details_pane').fadeOut(10);
+                        $('.data_details_pane').html('');
+                    });
+                    $('.details_txt').focus(function () {
+                        $(this).css('border', '1px solid #000');
+                    });
+                    $('.details_txt').focusout(function () {
+                        $(this).css('border', 'none');
+                    });
+                    $('.details_send_update').click(function () {
+                        var update_activity_details = $(this).data('bind');
+                        //here goes the fiels assignments
+                        var code = $('#det_txt_code').val();
+                        var description = $('#det_txt_description').val();
+
+
+                        $.post('../admin/handler_update_details.php', {update_activity_details: update_activity_details, code: code, description: description}, function (data) {
+                            alert('reached: ' + data);
+                        }).complete(function () {
+                            alert('finished');
+                        });
+                    });
+                    $('.details_txt').keyup(function () {
+                        $('.details_send_update').fadeIn(100);
+                    });
+                </script>
+                <!--ending js-->
+                <div class="parts full_center_two_h heit_free margin_free details_box">
+                    <div class="parts no_paddin_shade_no_Border no_shade_noBorder push_right data_details_pane_close_btn"></div>
+                    <table class="clickable_row_table" border="1">
+                        <tr>  <td>Item</td> <td>unit cost</td>   <td>Quantity</td> <td>Entry Date</td></tr>
+                        <?php while ($row = $stmt->fetch()) { ?>
+                            <tr>
+                                <td><?php echo $row['item']; ?></td>
+                                <td><?php echo $row['unit_cost']; ?></td>
+                                <td><?php echo $row['quantity']; ?></td>
+                                <td><?php echo $row['entry_date']; ?></td>
+                                <td><?php echo $row['User']; ?></td>
+                                <td><a href="#">Approve</a></td>
+                            </tr>   
+                        <?php }
+                        ?></table></div> <?php
+            } catch (PDOException $e) {
+                echo 'Error .. ' . $e->getMessage();
+            }
         }
 
     }
