@@ -91,7 +91,7 @@
         <?php include 'admin_header.php'; ?>
         <!--Start of Type Details-->
         <div class="parts p_project_type_details data_details_pane abs_full margin_free white_bg">
-            <div class="parts no_paddin_shade_no_Border data_res" style="background-color: #234094;">
+            <div class="parts no_paddin_shade_no_Border data_res" >
 
             </div>
         </div>
@@ -314,10 +314,10 @@
                 ?>
                 <div class="parts full_center_two_h heit_free no_paddin_shade_no_Border top_off_xx">
                     <form action="../print_more_reports/print_all_requests.php" target="blank" method="post">
-                        <input type="hidden" name="start_date" value="<?php // echo $this->get_this_year_start_date();            ?>"/>
-                        <input type="hidden" name="end_date" value="<?php // echo $this->get_this_year_end_date();            ?>"/>
-                        <input type="hidden" name="field_id" value="<?php // echo $row['p_field_id'];            ?>"/>
-                        <input type="hidden" name="field_name" value="<?php // echo $row['field_name'];            ?>"/>
+                        <input type="hidden" name="start_date" value="<?php // echo $this->get_this_year_start_date();             ?>"/>
+                        <input type="hidden" name="end_date" value="<?php // echo $this->get_this_year_end_date();             ?>"/>
+                        <input type="hidden" name="field_id" value="<?php // echo $row['p_field_id'];             ?>"/>
+                        <input type="hidden" name="field_name" value="<?php // echo $row['field_name'];             ?>"/>
                         <input type="submit" name="export" class="btn_export  btn_export_pdf margin_free" value="Export"/>
                     </form>
                 </div>
