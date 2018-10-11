@@ -441,7 +441,9 @@
 
                     </div>
                 </div>
-                <div class="clickable_row_table_box">            <table class="clickable_row_table ">
+
+                <div class="clickable_row_table_box">  
+                    <table class="clickable_row_table ">
                         <?php while ($row = $stmt->fetch()) { ?><tr> 
                                 <td></td>
                             </tr>
@@ -4752,11 +4754,9 @@
                     $('.details_send_update').click(function () {
                         var update_activity_details = $(this).data('bind');
                         //here goes the fiels assignments
-                        var code = $('#det_txt_code').val();
-                        var description = $('#det_txt_description').val();
 
 
-                        $.post('../admin/handler_update_details.php', {update_activity_details: update_activity_details, code: code, description: description}, function (data) {
+                        $.post('../admin/handler_update_details.php', {update_activity_details: update_activity_details, }, function (data) {
                             alert('reached: ' + data);
                         }).complete(function () {
                             alert('finished');
@@ -4768,9 +4768,18 @@
                 </script>
                 <!--ending js-->
                 <div class="parts full_center_two_h heit_free margin_free details_box">
+                    <div class="parts no_paddin_shade_no_Border no_shade_noBorder data_details_pane_title">
+                        account_class Details
+                    </div>
                     <div class="parts no_paddin_shade_no_Border no_shade_noBorder push_right data_details_pane_close_btn"></div>
-                    <table class="clickable_row_table" border="1">
-                        <tr>  <td>Item</td> <td>unit cost</td>   <td>Quantity</td> <td>Entry Date</td></tr>
+                    <div class="parts  no_shade_noBorder data_details_pane_load">
+
+                    </div>
+                </div>
+
+                <div class="clickable_row_table_box">  
+                    <table class="dataList_table clickable_row_table">
+                        <tr>  <td>Item</td> <td>unit cost</td>   <td>Quantity</td> <td>Entry Date</td> <td>User</td <td>Approve</td> </tr>
                         <?php while ($row = $stmt->fetch()) { ?>
                             <tr>
                                 <td><?php echo $row['item']; ?></td>
@@ -4781,7 +4790,8 @@
                                 <td><a href="#">Approve</a></td>
                             </tr>   
                         <?php }
-                        ?></table></div> <?php
+                        ?></table>
+                </div> <?php
             } catch (PDOException $e) {
                 echo 'Error .. ' . $e->getMessage();
             }
