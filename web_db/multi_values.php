@@ -12259,9 +12259,7 @@
                                    <?php echo $row['p_request_id']; ?>">Update</a>
                             </td>
                             <td>
-                                <a href="#" class="p_request_view_link" style="color: #000080;" data-id_delete="p_request_id"  data-table_id="
-                                   <?php echo $row['main_req']; ?>">View</a>
-                            </td>
+                                <a href="#" class="p_request_view_link" style="color: #000080;" data-id_delete="p_request_id"  data-table_id="<?php echo $row['main_req']; ?>">View</a>   </td>
                             <?php
                         }
                         if ($_SESSION['cat'] == 'mates' || $_SESSION['cat'] == 'admin' || $_SESSION['cat'] == 'daf') {
