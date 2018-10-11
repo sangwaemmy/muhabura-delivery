@@ -1380,6 +1380,7 @@ function view_link_click() {
             res = data;
         }).complete(function () {
             $('.data_res').html(res);
+            $('.data_details_pane_load').hide();
         });
     });
 }
