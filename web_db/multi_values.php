@@ -646,8 +646,6 @@
             }
 
 //chosen individual field
-
-
             function All_account_class() {
                 $c = 0;
                 $database = new dbconnection();
@@ -7323,14 +7321,16 @@
             $database = new dbconnection();
             $db = $database->openConnection();
             if ($_SESSION['cat'] == 'admin' || $_SESSION['cat'] == 'mates') {
-                $sql = "select p_budget_prep.p_budget_prep_id,  p_budget_prep.project_type,  p_budget_prep.user,  p_budget_prep.entry_date,  project_expectations.name as type,     p_type_project.name, p_budget_prep.name as activity   from p_budget_prep "
+                $sql = "select p_budget_prep.p_budget_prep_id,  p_budget_prep.project_type,  p_budget_prep.user,  p_budget_prep.entry_date,  project_expectations.name as type,     p_type_project.name, p_budget_prep.name as activity,user.Firstname,user.Lastname   from p_budget_prep "
+                        . " join user on user.StaffID=p_budget_prep.user "
                         . " join p_type_project on p_type_project.p_type_project_id=p_budget_prep.project_type "
                         . "left join p_activity on p_activity.project=p_budget_prep.p_budget_prep_id "
                         . "left join project_expectations on project_expectations.project_expectations_id=p_activity.budget_type "
                         . " order by  p_type_project.name asc";
             } else {
-                $sql = "select p_budget_prep.p_budget_prep_id,  p_budget_prep.project_type,  p_budget_prep.user,  p_budget_prep.entry_date,  project_expectations.name as type,     p_type_project.name, p_budget_prep.name as activity   from p_budget_prep "
-                        . " join p_type_project on p_type_project.p_type_project_id=p_budget_prep.project_type "
+                $sql = "select p_budget_prep.p_budget_prep_id,  p_budget_prep.project_type,  p_budget_prep.user,  p_budget_prep.entry_date,  project_expectations.name as type,     p_type_project.name, p_budget_prep.name as activity,user.Firstname,user.Lastname   from p_budget_prep "
+                        . " join user on user.StaffID=p_budget_prep.user "
+                        . "  join p_type_project on p_type_project.p_type_project_id=p_budget_prep.project_type "
                         . "left join p_activity on p_activity.project=p_budget_prep.p_budget_prep_id "
                         . "left join project_expectations on project_expectations.project_expectations_id=p_activity.budget_type "
                         . "  where p_budget_prep.user='" . $_SESSION['userid'] . "' "
@@ -7348,6 +7348,7 @@
                         <td>Project Name</td>
 
                         <td> Entry Date </td>
+                        <td> User </td>
                         <?php if (!empty($_SESSION['shall_delete'])) { ?>
                             <td>Delete</td>
                             <td>Update</td><?php } ?>
@@ -7373,9 +7374,8 @@
                         <?php echo $this->_e($row['activity']); ?>
                     </td>
 
-                    <td>
-                        <?php echo $this->_e($row['entry_date']); ?>
-                    </td>
+                    <td> <?php echo $this->_e($row['entry_date']); ?></td>
+                    <td> <?php echo $this->_e($row['Firstname'] . ' ' . $row['Lastname']); ?></td>
                     <?php if (!empty($_SESSION['shall_delete'])) { ?>
                         <td>
                             <a href="#" class="p_budget_prep_delete_link" style="color: #000080;" data-id_delete="p_budget_prep_id"  data-table="
@@ -10117,6 +10117,41 @@
                 return $first_rec;
             }
 
+            function All_p_fund_usage() {
+                $c = 0;
+                $database = new dbconnection();
+                $db = $database->openConnection();
+                $sql = "select  p_fund_usage_id   from p_fund_usage";
+                foreach ($db->query($sql) as $row) {
+                    $c += 1;
+                }
+                return $c;
+            }
+
+            function get_first_p_fund_usage() {
+                $con = new dbconnection();
+                $sql = "select p_fund_usage.p_fund_usage_id from p_fund_usage
+                    order by p_fund_usage.p_fund_usage_id asc
+                    limit 1";
+                $stmt = $con->openconnection()->prepare($sql);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $first_rec = $row['p_fund_usage_id'];
+                return $first_rec;
+            }
+
+            function get_last_p_fund_usage() {
+                $con = new dbconnection();
+                $sql = "select p_fund_usage.p_fund_usage_id from p_fund_usage
+                    order by p_fund_usage.p_fund_usage_id desc
+                    limit 1";
+                $stmt = $con->openconnection()->prepare($sql);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $first_rec = $row['p_fund_usage_id'];
+                return $first_rec;
+            }
+
             function list_p_approvals($min) {
                 $database = new dbconnection();
                 $db = $database->openConnection();
@@ -11109,6 +11144,24 @@
             <?php
         }
 
+        function get_p_fund_request_in_combo() {
+            require_once('../web_db/connection.php');
+            $database = new dbconnection();
+            $db = $database->openConnection();
+            $sql = " select p_fund_request.p_fund_request_id, p_fund_request.entry_date,p_fund_request.amount, user.Firstname,user.Lastname  from p_fund_request "
+                    . " join user on user.StaffID=p_fund_request.User"
+                    . "";
+            ?>
+            <select class="textbox cbo_request "><option></option>
+                <?php
+                foreach ($db->query($sql) as $row) {
+                    echo "<option value=" . $row['p_fund_request_id'] . ">" . $row['entry_date'] . " --- " . $row['amount'] . "  (" . $row['Firstname'] . ") </option>";
+                }
+                ?>
+            </select>
+            <?php
+        }
+
         function get_approval_type_in_combo() {
             require_once('../web_db/connection.php');
             $database = new dbconnection();
@@ -11251,14 +11304,16 @@
             $database = new dbconnection();
             $db = $database->openConnection();
             if ($_SESSION['cat'] == 'admin' || $_SESSION['cat'] == 'mates') {
-                $sql = "select p_activity.p_activity_id,p_activity.name,p_type_project.name as type,project_expectations.name as btype, p_activity.amount,  p_budget_prep.name as project from  p_activity "
+                $sql = "select p_activity.p_activity_id,p_activity.name,p_type_project.name as type,project_expectations.name as btype, p_activity.amount,  p_budget_prep.name as project, user.Firstname,user.Lastname from  p_activity "
                         . " join p_budget_prep on p_budget_prep.p_budget_prep_id=p_activity.project "
-                        . " join project_expectations on project_expectations.project_expectations_id=p_activity.budget_type "
+                        . " join user on user.StaffID=p_budget_prep.user"
+                        . "  join project_expectations on project_expectations.project_expectations_id=p_activity.budget_type "
                         . " join p_type_project on p_budget_prep.project_type=p_type_project.p_type_project_id  "
                         . " group by p_activity.p_activity_id";
             } else {
-                $sql = "select p_activity.p_activity_id,p_activity.name,p_type_project.name as type,project_expectations.name as btype, p_activity.amount,  p_budget_prep.name as project from  p_activity "
+                $sql = "select p_activity.p_activity_id,p_activity.name,p_type_project.name as type,project_expectations.name as btype, p_activity.amount,  p_budget_prep.name as project, user.Firstname,user.Lastname from  p_activity "
                         . " join p_budget_prep on p_budget_prep.p_budget_prep_id=p_activity.project "
+                        . " join user on user.StaffID=p_budget_prep.user  "
                         . " join project_expectations on project_expectations.project_expectations_id=p_activity.budget_type "
                         . " join p_type_project on p_budget_prep.project_type=p_type_project.p_type_project_id  "
                         . " "
@@ -11277,6 +11332,7 @@
                         <td> Project </td>
                         <td> Activity </td> 
                         <td> Amount </td> 
+                        <td> User </td> 
                         <?php if (isset($_SESSION['shall_delete'])) { ?>    <td>Delete</td>
                             <td>Update</td><?php } ?>
                     </tr></thead>
@@ -11302,6 +11358,9 @@
                         </td>
                         <td>
                             <?php echo $this->_e(number_format($row['amount'])); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->_e($row['Firstname'] . ' ' . $row['Lastname']); ?>
                         </td>
                         <?php if (isset($_SESSION['shall_delete'])) { ?>    <td>
                                 <a href="#" class="p_activity_delete_link" style="color: #000080;" data-id_delete="p_activity_id"  data-table="
@@ -11928,7 +11987,6 @@
                 $db = $database->openConnection();
                 $sql = "select * from user "
                         . " join role on role.role_id=user.Roleid "
-                        . " join staff_positions on staff_positions_id=user.position_depart"
                         . " where role.name <>'dev'";
                 $stmt = $db->prepare($sql);
                 $stmt->execute(array(":min" => $min));
@@ -11966,7 +12024,7 @@
                             <?php echo $this->_e($row['EmailAddress']); ?>
                         </td>
                         <td>
-                            <?php echo $this->_e($row['Roleid']); ?>
+                            <?php echo $this->_e($row['name']); ?>
                         </td>
                         <td>
                             <?php echo $this->_e($row['IsActive']); ?>
@@ -12001,8 +12059,7 @@
                 echo $field;
             }
 
-            function get_chosen_p_users_password($id) 
-            {
+            function get_chosen_p_users_password($id) {
 
                 $db = new dbconnection();
                 $sql = "select   p_users.password from p_users where p_users_id=:p_users_id ";
@@ -12136,18 +12193,17 @@
         function list_p_request($min) {
             $database = new dbconnection();
             $db = $database->openConnection();
-            $sql = "select p_request.status, p_request.p_request_id,  p_request.item,  p_request.quantity,  p_request.unit_cost,  p_request.amount,  p_request.entry_date,  p_request.User,  p_request.measurement,  p_request.request_no,user.Firstname,user.Lastname ,p_budget_items.item_name as item ,p_budget_items.description, measurement.code as measurement"
+            $sql = "select min(p_request.status)as status,p_request.main_req, min(p_request.p_request_id)as p_request_id,  min(p_request.item) as item, sum(p_request.quantity)as quantity ,  min(p_request.unit_cost) as unit_cost,  sum(p_request.amount) as amount,  min(p_request.entry_date) as entry_date,  min(p_request.User) as User,  min(p_request.measurement) as measurement,  min(p_request.request_no) as request_no, min(user.Firstname) as Firstname,min(user.Lastname) as Lastname ,min(p_budget_items.item_name) as item ,min(p_budget_items.description) as description, min(measurement.code) as measurement"
                     . " from p_request "
                     . " join user on user.StaffiD=p_request.User "
                     . " join p_budget_items on p_budget_items.p_budget_items_id=p_request.item"
                     . " join measurement on measurement_id=p_request.measurement
-                       group by p_request.main_req";
+                       group by p_request.main_req ";
             $stmt = $db->prepare($sql);
             $stmt->execute(array(":min" => $min));
             ?>
             <table class="dataList_table">
                 <thead><tr>
-
                         <td> S/N </td>
                         <td> Item </td>
                         <td> Unit Cost </td>
@@ -12155,16 +12211,16 @@
                         <td> Entry Date </td><td> User </td>
                         <td> Measurement </td><td class="off"> Request Number </td>
                         <?php if (isset($_SESSION['shall_delete'])) { ?>  <td>Delete</td><td>Update</td>
-                        <td> Action </td>
+                            <td> Action </td>
                         <?php } ?>  </tr></thead>
 
                 <?php
                 $pages = 1;
                 while ($row = $stmt->fetch()) {
-                    ?><tr class="clickable_row" data-table_id="<?php echo $row['p_request_id']; ?>"     data-bind="p_request"> 
+                    ?><tr class="" data-table_id="<?php echo $row['main_req']; ?>"     data-bind="p_request"> 
 
                         <td>
-                            <?php echo $row['p_request_id']; ?>
+                            <?php echo $row['main_req']; ?>
                         </td>
                         <td class="item_id_cols p_request " title="p_request" >
                             <?php echo $this->_e($row['item']); ?>
@@ -12193,7 +12249,6 @@
                         <td class="off">
                             <?php echo $this->_e($row['request_no']); ?>
                         </td>
-
                         <?php if (isset($_SESSION['shall_delete'])) { ?>
                             <td>
                                 <a href="#" class="p_request_delete_link" style="color: #000080;" data-id_delete="p_request_id"  data-table="
@@ -12203,212 +12258,192 @@
                                 <a href="#" class="p_request_update_link" style="color: #000080;" value="
                                    <?php echo $row['p_request_id']; ?>">Update</a>
                             </td>
-                        <?php } 
+                            <td>
+                                <a href="#" class="p_request_view_link" style="color: #000080;" data-id_delete="p_request_id"  data-table_id="
+                                   <?php echo $row['main_req']; ?>">View</a>
+                            </td>
+                            <?php
+                        }
+                        if ($_SESSION['cat'] == 'mates' || $_SESSION['cat'] == 'admin' || $_SESSION['cat'] == 'daf') {
+                            if ($_SESSION['cat'] == 'daf') {
+                                if ($row['status'] == 0) {
+                                    ?>
+                                    <td>
+                                        <a href="#" class="p_request_update_link" style="color: #000080;" value="
+                                           <?php echo $row['p_request_id']; ?>">Approve </a>
+                                    </td>
 
+                                    <?php
+                                } else {
+                                    ?>
+                                    <td> Approved </td>
+                                    <?php
+                                }
+                            } else {
 
-                            if ($_SESSION['cat']=='mates' || $_SESSION['cat']=='admin' || $_SESSION['cat']=='daf')
-                                {
-                                    if($_SESSION['cat']=='daf')
-                                    {
-                                        if($row['status']==0)
-                                        {
-                                        ?>
-                                             <td>
-                                                <a href="#" class="p_request_update_link" style="color: #000080;" value="
-                                                 <?php echo $row['p_request_id']; ?>">Approve </a>
-                                            </td>
+                                if ($row['status'] == 1) {
+                                    ?>
+                                    <td>
+                                        <a href="#" class="p_request_update_link" style="color: #000080;" value="
+                                           <?php echo $row['p_request_id']; ?>">Approve</a>
+                                    </td>
+                                    <?php
+                                } else if ($row['status'] == 0) {
+                                    ?>
+                                    <td> Pending At DAF Office </td>
 
-                                        <?php 
-                                        }
-                                        else 
-                                        {
-                                        ?>
-                                                <td> Approved </td>
-                                       <?php 
-                                        }
-                                    }
-                                    else 
-                                    {
+                                    <?php
+                                } else if ($row['status'] == 2) {
+                                    ?>
+                                    <td> Approved </td>
 
-                                      if($row['status']==1)
-                                        {
-                                        ?>
-                                             <td>
-                                               <a href="#" class="p_request_update_link" style="color: #000080;" value="
-                                                <?php echo $row['p_request_id']; ?>">Approve</a>
-                                             </td>
-                                        <?php
-                                        }
-                                        else if ($row['status']==0) 
-                                        
-                                        {
-                                        ?>
-                                            <td> Pending At DAF Office </td>
-                                        
-                                        <?php  
-                                        }
+                                    <?php
+                                }
+                            }
+                        } else {
 
-                                        else if ($row['status']==2)
-                                        {
-                                            ?>
-                                                <td> Approved </td>
+                            if ($row['status'] == 2) {
+                                ?>
 
-                                        <?php }
-                                        
-                                        }
-                                    }
-                                    else 
-                                    {
-
-                                            if($row['status']==2)
-                                            {
-                                            ?>
-                                           
-                                                <td>Approved by DG</td>
-                                             <?php
-                                         }
-                                            else if ($row['status']==1)
-                                            {?>
-                                               <td>Approved by DAF, Waiting for DG Approval </td> 
-                                             <?php
-                                            }
-                                            else if ($row['status']==0)
-                                            {
-                                                ?>
-                                               <td> Waiting for DAF Approval </td>  
-                                            <?php
-                                        }
-
-                                    }        
-                            ?>
-                        </tr>
+                                <td>Approved by DG</td>
+                                <?php
+                            } else if ($row['status'] == 1) {
+                                ?>
+                                <td>Approved by DAF, Waiting for DG Approval </td> 
+                                <?php
+                            } else if ($row['status'] == 0) {
+                                ?>
+                                <td> Waiting for DAF Approval </td>  
+                                <?php
+                            }
+                        }
+                        ?>
+                    </tr>
                     <?php
-
                     $pages += 1;
                 }
+                ?>
 
-?>
-                
-                </table>
+            </table>
 
-                <?php
-            }
+            <?php
+        }
 
 //chosen individual field
-            function get_chosen_p_request_entry_date($id) {
+        function get_chosen_p_request_entry_date($id) {
 
-                $db = new dbconnection();
-                $sql = "select   p_request.entry_date from p_request where p_request_id=:p_request_id ";
-                $stmt = $db->openConnection()->prepare($sql);
-                $stmt->bindValue(':p_request_id', $id);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $field = $row['entry_date'];
-                echo $field;
+            $db = new dbconnection();
+            $sql = "select   p_request.entry_date from p_request where p_request_id=:p_request_id ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->bindValue(':p_request_id', $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $field = $row['entry_date'];
+            echo $field;
+        }
+
+        function get_chosen_p_request_user($id) {
+
+            $db = new dbconnection();
+            $sql = "select   p_request.user from p_request where p_request_id=:p_request_id ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->bindValue(':p_request_id', $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $field = $row['user'];
+            echo $field;
+        }
+
+        function get_chosen_p_request_req_type($id) {
+
+            $db = new dbconnection();
+            $sql = "select   p_request.req_type from p_request where p_request_id=:p_request_id ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->bindValue(':p_request_id', $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $field = $row['req_type'];
+            echo $field;
+        }
+
+        function get_chosen_p_request_description($id) {
+
+            $db = new dbconnection();
+            $sql = "select   p_request.description from p_request where p_request_id=:p_request_id ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->bindValue(':p_request_id', $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $field = $row['description'];
+            echo $field;
+        }
+
+        function get_chosen_p_request_fin_requirement($id) {
+
+            $db = new dbconnection();
+            $sql = "select   p_request.fin_requirement from p_request where p_request_id=:p_request_id ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->bindValue(':p_request_id', $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $field = $row['fin_requirement'];
+            echo $field;
+        }
+
+        function get_chosen_p_request_currencyid($id) {
+
+            $db = new dbconnection();
+            $sql = "select   p_request.currencyid from p_request where p_request_id=:p_request_id ";
+            $stmt = $db->openConnection()->prepare($sql);
+            $stmt->bindValue(':p_request_id', $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $field = $row['currencyid'];
+            echo $field;
+        }
+
+        function All_p_request() {
+            $c = 0;
+            $database = new dbconnection();
+            $db = $database->openConnection();
+            $sql = "select  p_request_id   from p_request";
+            foreach ($db->query($sql) as $row) {
+                $c += 1;
             }
+            return $c;
+        }
 
-            function get_chosen_p_request_user($id) {
-
-                $db = new dbconnection();
-                $sql = "select   p_request.user from p_request where p_request_id=:p_request_id ";
-                $stmt = $db->openConnection()->prepare($sql);
-                $stmt->bindValue(':p_request_id', $id);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $field = $row['user'];
-                echo $field;
-            }
-
-            function get_chosen_p_request_req_type($id) {
-
-                $db = new dbconnection();
-                $sql = "select   p_request.req_type from p_request where p_request_id=:p_request_id ";
-                $stmt = $db->openConnection()->prepare($sql);
-                $stmt->bindValue(':p_request_id', $id);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $field = $row['req_type'];
-                echo $field;
-            }
-
-            function get_chosen_p_request_description($id) {
-
-                $db = new dbconnection();
-                $sql = "select   p_request.description from p_request where p_request_id=:p_request_id ";
-                $stmt = $db->openConnection()->prepare($sql);
-                $stmt->bindValue(':p_request_id', $id);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $field = $row['description'];
-                echo $field;
-            }
-
-            function get_chosen_p_request_fin_requirement($id) {
-
-                $db = new dbconnection();
-                $sql = "select   p_request.fin_requirement from p_request where p_request_id=:p_request_id ";
-                $stmt = $db->openConnection()->prepare($sql);
-                $stmt->bindValue(':p_request_id', $id);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $field = $row['fin_requirement'];
-                echo $field;
-            }
-
-            function get_chosen_p_request_currencyid($id) {
-
-                $db = new dbconnection();
-                $sql = "select   p_request.currencyid from p_request where p_request_id=:p_request_id ";
-                $stmt = $db->openConnection()->prepare($sql);
-                $stmt->bindValue(':p_request_id', $id);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $field = $row['currencyid'];
-                echo $field;
-            }
-
-            function All_p_request() {
-                $c = 0;
-                $database = new dbconnection();
-                $db = $database->openConnection();
-                $sql = "select  p_request_id   from p_request";
-                foreach ($db->query($sql) as $row) {
-                    $c += 1;
-                }
-                return $c;
-            }
-
-            function get_first_p_request() {
-                $con = new dbconnection();
-                $sql = "select p_request.p_request_id from p_request
+        function get_first_p_request() {
+            $con = new dbconnection();
+            $sql = "select p_request.p_request_id from p_request
                     order by p_request.p_request_id asc
                     limit 1";
-                $stmt = $con->openconnection()->prepare($sql);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $first_rec = $row['p_request_id'];
-                return $first_rec;
-            }
+            $stmt = $con->openconnection()->prepare($sql);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $first_rec = $row['p_request_id'];
+            return $first_rec;
+        }
 
-            function get_last_p_request() {
-                $con = new dbconnection();
-                $sql = "select p_request.p_request_id from p_request
+        function get_last_p_request() {
+            $con = new dbconnection();
+            $sql = "select p_request.p_request_id from p_request
                     order by p_request.p_request_id desc
                     limit 1";
-                $stmt = $con->openconnection()->prepare($sql);
-                $stmt->execute();
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                $first_rec = $row['p_request_id'];
-                return $first_rec;
-            }
+            $stmt = $con->openconnection()->prepare($sql);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $first_rec = $row['p_request_id'];
+            return $first_rec;
+        }
 
-            function list_p_request_type($min) {
-                $database = new dbconnection();
-                $db = $database->openConnection();
-                $sql = "select * from p_request_type";
-                $stmt = $db->prepare($sql);
-                $stmt->execute(array(":min" => $min));
-                ?>
+        function list_p_request_type($min) {
+            $database = new dbconnection();
+            $db = $database->openConnection();
+            $sql = "select * from p_request_type";
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array(":min" => $min));
+            ?>
             <table class="dataList_table">
                 <thead><tr>
 
@@ -12897,6 +12932,66 @@
                         <td>
                             <a href="#" class="tax_percentage_update_link" style="color: #000080;" value="
                                <?php echo $row['tax_percentage_id']; ?>">Update</a>
+                        </td></tr>
+                    <?php
+                    $pages += 1;
+                }
+                ?></table>
+                <?php
+            }
+
+            function list_p_fund_usage($min) {
+                $database = new dbconnection();
+                $db = $database->openConnection();
+                $sql = "select * from p_fund_usage";
+                $stmt = $db->prepare($sql);
+                $stmt->execute(array(":min" => $min));
+                ?>
+            <table class="dataList_table">
+                <thead><tr>
+
+                        <td> p_fund_usage </td>
+                        <td> Request </td><td> Amount </td><td> d_acount </td><td> c_account </td><td> Activity </td><td> Entry Date </td><td> User </td>
+                        <td>Delete</td><td>Update</td></tr></thead>
+
+                <?php
+                $pages = 1;
+                while ($row = $stmt->fetch()) {
+                    ?><tr> 
+
+                        <td>
+                            <?php echo $row['p_fund_usage_id']; ?>
+                        </td>
+                        <td class="request_id_cols p_fund_usage " title="p_fund_usage" >
+                            <?php echo $this->_e($row['request']); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->_e($row['amount']); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->_e($row['d_account']); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->_e($row['c_account']); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->_e($row['activity']); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->_e($row['entry_date']); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->_e($row['User']); ?>
+                        </td>
+
+
+                        <td>
+                            <a href="#" class="p_fund_usage_delete_link" style="color: #000080;" data-id_delete="p_fund_usage_id"  data-table="
+                               <?php echo $row['p_fund_usage_id']; ?>">Delete</a>
+                        </td>
+                        <td>
+                            <a href="#" class="p_fund_usage_update_link" style="color: #000080;" value="
+                               <?php echo $row['p_fund_usage_id']; ?>">Update</a>
                         </td></tr>
                     <?php
                     $pages += 1;
