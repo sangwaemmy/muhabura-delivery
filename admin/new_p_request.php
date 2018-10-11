@@ -47,7 +47,9 @@
                         $amount = $unit_c * $quantity;
                         $request_no = '';
                         $status = 'not_approved';
-                        $newobj->new_p_request($item, filter_var($quantity, FILTER_SANITIZE_NUMBER_INT), filter_var($unit_c, FILTER_SANITIZE_NUMBER_INT), filter_var($amount, FILTER_SANITIZE_NUMBER_INT), $entry_date, $user, $dc['measurement'], $request_no, $last_req, $status, $field);
+                        $DAF = date("Y-m-d h:m:s");
+                        $DG = date("Y-m-d h:m:s");
+                        $newobj->new_p_request($item, filter_var($quantity, FILTER_SANITIZE_NUMBER_INT), filter_var($unit_c, FILTER_SANITIZE_NUMBER_INT), filter_var($amount, FILTER_SANITIZE_NUMBER_INT), $entry_date, $user, $dc['measurement'], $request_no, $last_req, $status, $field, $DAF, $DG);
 //                        $m = new multi_values();
 //                        $last_header = $m->get_last_journal_entry_header();
 //                        $newobj->new_journal_entry_line($dc['Account'], $switch_dc, $amount, $dc['memo'], $last_header);
@@ -89,7 +91,9 @@
         <?php include 'admin_header.php'; ?>
         <!--Start of Type Details-->
         <div class="parts p_project_type_details data_details_pane abs_full margin_free white_bg">
+            <div class="parts no_paddin_shade_no_Border data_res" style="background-color: #234094;">
 
+            </div>
         </div>
         <!--End Tuype Details-->   
         <!--Start dialog's-->
@@ -310,10 +314,10 @@
                 ?>
                 <div class="parts full_center_two_h heit_free no_paddin_shade_no_Border top_off_xx">
                     <form action="../print_more_reports/print_all_requests.php" target="blank" method="post">
-                        <input type="hidden" name="start_date" value="<?php // echo $this->get_this_year_start_date();   ?>"/>
-                        <input type="hidden" name="end_date" value="<?php // echo $this->get_this_year_end_date();   ?>"/>
-                        <input type="hidden" name="field_id" value="<?php // echo $row['p_field_id'];   ?>"/>
-                        <input type="hidden" name="field_name" value="<?php // echo $row['field_name'];   ?>"/>
+                        <input type="hidden" name="start_date" value="<?php // echo $this->get_this_year_start_date();            ?>"/>
+                        <input type="hidden" name="end_date" value="<?php // echo $this->get_this_year_end_date();            ?>"/>
+                        <input type="hidden" name="field_id" value="<?php // echo $row['p_field_id'];            ?>"/>
+                        <input type="hidden" name="field_name" value="<?php // echo $row['field_name'];            ?>"/>
                         <input type="submit" name="export" class="btn_export  btn_export_pdf margin_free" value="Export"/>
                     </form>
                 </div>
