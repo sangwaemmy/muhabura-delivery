@@ -7344,7 +7344,7 @@
                         <td> S/N </td>
                         <td> Budget Line </td>
                         <td class="off"> User </td>
-                        <td> Budget Type </td>
+
                         <td>Project Name</td>
 
                         <td> Entry Date </td>
@@ -7367,9 +7367,7 @@
                         <td class="off"
                         <?php echo $this->_e($row['user']); ?>
                     </td>
-                    <td>
-                        <?php echo $this->_e($row['type']); ?>
-                    </td>
+
                     <td class="project_type_id_cols p_budget_prep " title="p_budget_prep" >
                         <?php echo $this->_e($row['activity']); ?>
                     </td>
