@@ -1,0 +1,715 @@
+.pages{
+    background-color: #fff;
+    width: 200px;
+    height: 250px;
+    margin-left: 10px;
+    border: 1px solid #ff9600;
+    box-shadow: 0px 0px 4px #ff9600;
+    background-image: url('../web_images/sub_icons.png');
+    background-repeat: no-repeat;
+    padding-top: 20px;
+    padding-left:10px;
+    position: relative;
+    text-align: center;
+}
+.pages_bottom{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    margin: 0px;
+    border: 1px solid #ff9600;
+    width: 100%;
+    /*display: none;*/
+
+}
+.pages_bottom_chart{
+    background-color: #82cacb;
+}
+.pages_bottom_journal{
+    background-color: #cbc682;
+}
+.pages_bottom_trial_b{
+    background-color: #8283cb;
+}
+.pages_bottom_income{
+    background-color: #89cb82;
+}
+.pages_bottom_balance{
+    background-color: #be82cb;
+}
+.pages_bottom_cashflow{
+    background-color: #82c2cb;
+}
+.control_menu{
+    padding: 2px;
+
+}
+.control_menu a{
+    float: left;
+    margin-left: 40px;
+    text-decoration: none;
+}
+/*adding icons on top right*/
+.journal_sub_p{
+    background-image: url('../web_images/journl_sub_icon.png');
+    background-repeat: no-repeat;
+    padding-top: 20px;
+    padding-left:20px;
+
+}
+.tb_sub_p{
+    background-image: url('../web_images/tb_sub_icon.png');
+    background-repeat: no-repeat;
+    padding-top: 20px;
+    padding-left:20px;
+}
+.income_sub_p{
+    background-image: url('../web_images/income_sub_icon.png');
+    background-repeat: no-repeat;
+    padding-top: 20px;
+    padding-left:20px;
+}
+.balance_sub_p{
+    background-image: url('../web_images/balance_sub_icon.png');
+    background-repeat: no-repeat;
+    padding-top: 20px;
+    padding-left:20px;
+}
+.projects_sub_p{
+    background-image: url('../web_images/projects_sub_icon.png');
+    background-repeat: no-repeat;
+    padding-top: 20px;
+    padding-left:20px;
+    background-color: #76b3f1;
+    color: #fff;
+}
+/*End adding icons top right*/
+#header2{
+    background-color: #ffffff;
+    border-bottom: 1px solid #1618ff;
+}
+/*changing background of main entry panes*/
+#pane_chart_acc{
+    background-color: #16c2ff;
+}
+#pane_journal{
+    background-color: #ff9f16;
+}
+#pane_t_balance{
+    background-color: #1618ff;
+    color: #fff;
+}
+#pane_income_stmt{
+    background-color: #1a7e07;
+    color: #fff;
+}
+#pane_b_sheet{
+    background-color: #8e1387;
+    color: #fff;
+}
+#pane_projects{
+    background-color: #76b3f1;
+}
+/*End of changing background of main entry panes*/
+
+.slid_left{
+    color: #0a2642;
+    text-align: center;
+    /*background-image: url('../web_images/welcome_icon.png');*/
+    background-repeat: no-repeat;
+    background-size: 6%;
+    padding-top: 30px;
+
+
+}
+.changing_title{
+    background-image: url('../web_images/title_pointer.png');
+    background-repeat: no-repeat;
+    padding-left: 50px;
+    background-position-y:8px; 
+
+}
+.sbu2_link{
+    font-size: 20px;
+}
+.main_link{
+    width: 100%;
+}
+.main_link:first-of-type{
+    margin-top: 50px;
+}
+.main_link a{
+    display: block;
+    text-decoration: none;
+    margin-top: 10px;
+    border-top: 1px solid #0a2642;
+    text-transform: capitalize;
+
+} 
+.my_logo{
+    height: 100px;
+    background-image: url('../web_images/only_logo.JPG');
+    width: 100px;
+    background-size: 90%;
+    background-repeat: no-repeat;
+    margin-left: 20%;
+
+}
+.small_btns{
+    margin: 8px;
+}
+.pane_opening_balance{
+    margin: auto;
+}
+.pane_icon{
+    background-image: url('../web_images/info_button.png');
+    min-height: 60px;
+    padding-left: 50px;
+    margin-top: 9px;
+    line-height: 1.6em;
+}
+.other_pane .textbox, .second_pane .textbox{
+    width: 100%;
+    padding: 8px;
+    background-color: #f0f4f7;
+}
+.second_pane{
+    width: 60%;
+}
+.other_pane table td, .second_pane table td{
+    padding: 4px;
+}
+.close_lock{
+    position: absolute;
+    right: 0px; 
+}
+.dataList_table{
+    width: 100%;
+}
+.dataList_table td{
+    padding: 4px 13px;
+    border:1px solid  #b6bcc5;
+}
+.dataList_table tr:nth-child(even) {
+    background: #c9e8f0;
+}
+.journal_entry_table{
+    padding: 4px 13px;
+    width: 70%;
+}
+.ftd select, .ftd .textbox{
+    margin: 0px;
+    background-color: #fff;
+    width: 100%;
+}
+.ftd .textbox{
+    border: none;
+    width: 200px;
+}
+.runtime td{
+    padding: 0px;
+
+}
+
+/*putting the contents on the right*/
+.menu{
+    float: right;
+}
+.pages, .new_data_box .eighty_centered, .datalist_box .whilte_text{
+    float: left;
+}
+.main_link span{
+    width: 100%;
+} 
+.new_data_box  .eighty_centered, .datalist_box .whilte_text{
+    border: none;
+    box-shadow: none;
+    text-transform: capitalize;
+    font-size: 20px;
+}
+
+.side_links_box a{
+    text-transform: capitalize;
+}
+.location_small_cbo{
+    width: 100%;
+
+    float: left;
+}
+.location_small_cbo .cbos{
+    width: 120px;
+}
+.last_cbo{
+    float: right;
+}
+.middle_cbo{
+    margin-left: 80px;
+}
+.big_title{
+    font-size: 20px;
+}
+.sml_title{
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.tab_only_joutnal .textbox{/*These style only  apply to the textboxes of journal entry table*/
+    max-width: 230px;
+}
+
+.main_list{
+    line-height: 2em;
+}
+.details{
+
+}
+/*REplicated classes*/
+.off{
+    display: none;
+}
+
+.more_settings a{
+    padding: 10px;
+    margin: 20px;
+    text-decoration: none;
+    float: left;
+    padding-left: 35px; background-repeat: no-repeat;
+}
+#sett_location{
+    background-image: url('../web_images/Location.ico');
+
+}
+#sett_department{
+    background-image: url('../web_images/departmt.ico');
+
+}
+#sett_measurement{
+    background-image: url('../web_images/measurement.png');
+
+}
+#sett_currency{
+    background-image: url('../web_images/currency.png');
+
+}
+#budget_exp_rev{
+    background-image: url('../web_images/risk.png');
+}
+.link_title_budgt{
+    background-image: url('../web_images/budget.png');
+}
+.link_title_prjct{
+    background-image: url('../web_images/project.png');
+}
+.link_title_finace{
+    background-image: url('../web_images/finance.png');
+}
+.link_title_sales{
+    background-image: url('../web_images/sales.png');
+}
+.link_title_purchase{
+    background-image: url('../web_images/purchase.png');
+}
+
+.link_title_reporting{
+    background-image: url('../web_images/reporting.png');
+}
+.link_title_settings{
+    background-image: url('../web_images/settings.png');
+}
+.link_title_stock{
+    background-image: url('../web_images/stock.png');
+}
+
+.control_menu{
+    margin-bottom: 0px;
+}
+#header2{
+    margin-top: 0px;
+}
+.footer{
+    position: fixed;
+    bottom: 0px;
+    left: -203px;
+    width: 100%;
+    margin-bottom: 0px;
+    z-index: 69;
+}
+.mid{
+    left: 0px;
+}
+
+.confirm_buttons{
+    background-image: url('../web_images/diskette.png');
+    padding-left: 40px;
+    background-repeat: no-repeat;
+    background-size: 20%;
+    background-position-x: 5px;
+    background-position-y: 5px;
+
+}
+.gen_full{
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    margin: 0px;
+    z-index: 20;
+    position: fixed;
+    height: 100%;
+}
+/*REport*/
+.p_color{
+    background-color: #f3e8c6;
+}
+.net_color{
+    background-color: #16c2ff;
+}
+.alert_pane{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+.icon_info{
+    background-image: url('../web_images/question.png');
+    background-repeat: no-repeat;
+    width: 64px;
+    height: 64px;
+}
+.alert{
+    background-image: url('../web_images/broken_file.png');
+    background-repeat: no-repeat;
+    width: 32px;
+    height: 32px;
+    background-size: 90%;
+    background-position-y: 3px;
+}
+.issue_title{
+    width: 300px;
+}
+.issue_title:hover{
+    cursor: pointer;
+}
+
+.income_table{
+    width: 100%;
+
+}
+.income_table td:first-of-type{
+    /*text-align: right;*/
+    width: 50%;
+}
+.less_color_table{
+    border-collapse: collapse;
+
+}
+.tax_table {
+    border-collapse: collapse;
+}
+.tax_table thead td{
+    background-color: #0a2642;
+    color: #fff;
+    padding: 15px;
+}
+.tax_table thead td .textbox{
+    padding: 3px;
+}
+.tax_label_col:hover{
+    background-color: #d2d1da;
+    cursor: pointer
+}
+.conf_tax:hover{
+    cursor: pointer;
+}
+.current_txt{
+    /*background-color: #bcb6f4;*/
+    border: 1px solid #ff0000;
+}
+.sign_table{
+    width: 200px;
+    position: fixed;
+    right: 10px;
+}
+.sign_table td{
+    background-color: #a15fb3;
+    padding: 10px;  
+    font-size: 15px;
+    font-weight: bolder;
+    margin-left: 20px; float: left;
+    color: #fff;
+
+}
+.sign_table_td_highlight{
+    background-color: #1618ff;
+}
+#warn_box{
+    font-size: 12px;
+    color: #f91f1f;
+}
+.sign_table td:hover{
+    cursor: pointer;
+
+
+}
+.perc_row{
+    display: none;
+}
+.pre_alert{
+    position: fixed;
+    top: 0px; 
+    right: 0px;
+    width: 100px;
+    z-index: 11;
+    background:none;
+
+}
+.pre_alert_box{
+    width: 32px;
+    height: 32px;
+    background-image: url('../web_images/info.png');
+}
+.load_gif{
+    background-image: url('../web_images/continuous.gif');
+    background-repeat: no-repeat;
+    height: 20px;
+    text-align: center;
+    background-position-x: 40%;
+}
+.books_header{
+    background-color: #48ce99;
+    font-weight: bolder;
+}
+.out_border{
+    border: 1px solid #0a2642;
+    width: 100%;
+    margin-left: 0px;
+}
+.padding_sides td{
+    padding-left: 10px;
+}
+.note_cells{
+    width: 80px;
+    padding-left: 40px;
+  
+}
+.cbo_rep_period_options{
+    width: 250px;
+    background-color: #40a04b;
+    color: #fff;
+    
+    
+}
+
+
+/*Start general ledger.php */
+.tab_ledger td{
+   border: 1px solid #000;
+   padding: 3px;
+   font-weight: bold;
+}
+.tab_ledger tr:first-of-type{
+    background-color: #32aad4;
+    color: #fff;
+}
+.row_center_txt td{
+    text-align: center;
+    font-weight: bolder;
+}
+.row_bold td{
+    font-weight: bold;
+}
+.db_cr_cells{
+    min-width: 100px;
+}
+
+.fullwith_bg{
+    background-color: #388bd4;
+    opacity: 0.98;
+}
+
+.skin{
+    background-color: #49b2d7;
+    
+}
+.y_n_dialog{
+     border: 1px solid #fff;
+   
+}
+.y_n_dialog .pane_title{
+    box-shadow: none;
+    border: 1px solid #fff;
+    color: #fff;
+    text-align: center;
+    text-transform: capitalize;
+}
+.dialog_yes_no{
+      width: 25%;
+     margin-left: 38%;
+     margin-top: 10%;
+}
+.yes_dlg_btn{
+    margin-left: 70px;
+}
+.no_dlg_btn{
+    margin-left: 50px;
+}
+.yes_no_btns{
+    padding: 9px;
+    width: 70px;
+    text-align: center;
+    background-color: #51d749;
+    color: #fff;
+}
+.cbo_tax_arr{
+    width: 100px;
+}
+
+/*Jounal entry start*/
+.j_credit_txt{
+    width: 100px;
+}
+.link_to_project{
+    margin: auto;
+    color: #0024c4;
+}
+.j_links_spans{
+    margin: 0px;
+    width: 100%;
+    float: left;     
+    
+}
+.dif_bg{
+    background-color: #ffffff;
+    text-align: center;
+    background-image: url('../web_images/planning.png');
+    background-repeat: no-repeat;
+    background-position-x: 10px;
+    background-position-y: 10px;
+}
+.dif_bg:hover{
+    cursor: pointer;
+}
+.dif_bg a{
+   color: #0024c4;
+   
+}
+.any_full_bg{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 11;
+    margin:0px;
+    background-color: #388bd4;
+    opacity: .97;
+    
+}
+.ticked{
+    background-image: url('../web_images/tick.png');
+    /*background-repeat: no-repeat;*/
+        
+}
+.sub_full_bg{
+    position: fixed;
+    background-color: #fff;
+    min-height: 300px;
+    z-index: 22;
+    margin-top: 40px;
+}
+.tab_prev_activity{
+    border-collapse: collapse;
+    background-color: #d5d9f4;
+    width: 100%;
+        
+}
+.dif_td{
+    background-color: #14b1ff;
+    text-align: center;
+    text-decoration: none;
+}
+.dif_td:hover{
+    text-decoration: underline;
+}
+.tab_prev_activity td{
+    padding: 15px;
+    font-size: 15px;
+    font-weight: bolder;
+}
+.tab_prev_activity  td a{
+    color: #0a135c;
+}
+.warn_msg{
+    color: #aa1100;
+}
+#warn_empty_bank_radio{
+    color: #ff1a00;
+}
+/*End journal entry end*/
+.fifty_left{
+    width: 49%;
+}
+.journal_entry_table_view {
+   border-collapse: collapse;
+   width: 80%;
+   font-size: 10.5px;
+    float: right;
+    margin-right: 10%;
+}
+.journal_entry_table_view thead, .journal_entry_table_view_last_row, .journal_entry_table_view_last_row span{
+    background-color: #f4f3fa;
+    font-weight: bolder;
+    
+}
+.journal_entry_table_view_last_row ,.journal_entry_table_view_last_row span, .journal_entry_table_view_last_row{
+    padding: 0px;
+}
+.journal_entry_table_view_last_row span{
+    width: 100%;
+}
+.journal_entry_table_view thead td{
+    font-weight: bolder;
+}
+.journal_entry_table_view td{
+    padding: 5px;
+    font-weight: 300;
+    /*border: #f6efef;*/
+    border: 1px solid #efeff6;
+}
+.text_right{
+    text-align: right;
+}
+.double_underline{
+    border-bottom-style: double;
+}
+.row_no_border{
+    border: none;
+}
+.no_padding{/*This is applied on the journal list sums*/
+    padding: 2px;
+}
+.single_underline{
+      border-bottom: 1px solid #000;
+}
+.report_percentage_tableview{
+    border-collapse: collapse;
+    width: 80%;
+    margin-left: 10%;
+}
+.report_percentage_tableview tr:first-of-type{
+    background-color: #c8ccf4;
+}
+.report_percentage_tableview tr:first-of-type td{
+    text-align: center;
+    text-transform: uppercase;
+}
+.report_percentage_tableview td{
+    padding: 8px;
+    border: 1px solid #646ee1;
+    font-weight: bolder;
+    min-width: 40px;
+}
+.wait_loader{
+    width: 16px;
+    height: 16px;   
+    background-image: url('../web_images/wait loader.gif');
+}

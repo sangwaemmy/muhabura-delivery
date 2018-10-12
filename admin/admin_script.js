@@ -11,7 +11,9 @@ var end_date = '';
 
 //</editor-fold>
 var fin_res = '';//this is the fincial results that come when someone has clicked the income statement of balance sheet or the cash flow
-
+var view_link_txt = '';//This is the view link itself (object)
+var neightbor_link_hml = '';//This is the td of status
+var who_approves = '';
 $(document).ready(function () {
     try {
         mainLink_click();
@@ -51,6 +53,7 @@ $(document).ready(function () {
         switch_page_submenu();
         validate_activity_radio();
         view_link_click();
+
         //        hide_footer();
     } catch (err) {
         alert(err.message);
@@ -1371,16 +1374,26 @@ function validate_activity_radio() {
 }
 
 function view_link_click() {
-    var res = '';
+
     $('.p_request_view_link').click(function () {
-        var cont = 'c';
-        $('.data_details_pane').fadeIn();
-        var view_request = $(this).data('table_id');
-        $.post('../admin/handler_update_details.php', {view_request: view_request}, function (data) {
-            res = data;
-        }).complete(function () {
-            $('.data_res').html(res);
-            $('.data_details_pane_load').hide();
-        });
+        try {
+            var res = '';
+            var cont = 'c';
+            $('.data_details_pane').fadeIn();
+            var view_request = $(this).data('table_id');
+            view_link_txt = $(this);
+            neightbor_link_hml = $(this).closest('tr').find('td.status_td');
+             who_approves = $(this).data('who');
+            var update_as_dg = $(this).data('table_id');
+            $.post('handler_update_details.php', {view_request: view_request}, function (data) {
+                res = data;
+            }).complete(function () {
+                $('.data_res').html(res);
+                $('.data_details_pane_load').hide();
+            });
+
+        } catch (err) {
+            alert(err.message);
+        }
     });
-}
+} 

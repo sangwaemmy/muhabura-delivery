@@ -502,4 +502,16 @@
         $view_request = filter_input(INPUT_POST, 'view_request');
         echo $obj->get_request_details($view_request);
     }
-    
+
+    if (filter_has_var(INPUT_POST, 'approve_link')) {
+        require_once '../web_db/updates.php';
+        $obj = new updates();
+        $approve_link = filter_input(INPUT_POST, 'approve_link'); //The request
+        echo $obj->update_request_daf(1, $approve_link);
+    }
+    if (filter_has_var(INPUT_POST, 'update_as_dg')) {
+        require_once '../web_db/updates.php';
+        $obj = new updates();
+        $update_as_dg = filter_input(INPUT_POST, 'update_as_dg'); //The request
+        echo $obj->update_request_dg(2, $update_as_dg);
+    }
