@@ -4734,38 +4734,70 @@
                 require_once('../web_db/connection.php');
                 $con = new dbconnection();
                 $db = $con->openconnection();
-                $sql = " select * from p_request where p_request.main_req=:req ";
+                $sql = " SELECT  * from p_request
+                 join p_budget_items  on  p_budget_items.p_budget_items_id= p_request.item 
+                 join user on user.StaffID = p_request.User 
+                 where p_request.main_req=:req ";
                 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $stmt = $db->prepare($sql);
                 $stmt->execute(array(":req" => $main_req));
                 ?> 
                 <!--this is js-->
                 <script>
-                    $('.data_details_pane_close_btn').click(function () {
-                        $('.data_details_pane').fadeOut(10);
-                        $('.data_details_pane').html('');
-                    });
-                    $('.details_txt').focus(function () {
-                        $(this).css('border', '1px solid #000');
-                    });
-                    $('.details_txt').focusout(function () {
-                        $(this).css('border', 'none');
-                    });
-                    $('.details_send_update').click(function () {
-                        var update_activity_details = $(this).data('bind');
-                        //here goes the fiels assignments
-
-
-                        $.post('../admin/handler_update_details.php', {update_activity_details: update_activity_details, }, function (data) {
-                            alert('reached: ' + data);
-                        }).complete(function () {
-                            alert('finished');
+                    try {
+                        $('.data_details_pane_close_btn').click(function () {
+                            $('.data_details_pane').fadeOut(10);
                         });
-                    });
-                    $('.details_txt').keyup(function () {
-                        $('.details_send_update').fadeIn(100);
-                    });
-                </script>
+                        $('.details_approve_link').click(function () {
+                            //Load a picture
+                            var approve_link = $(this).data('bind');
+                            $(this).closest('tr').find('.wait_loader').show();
+                            var this_l = $(this);
+
+                            if (who_approves == 'DG') {
+                                var update_as_dg = approve_link;
+
+                                $.post('../admin/handler_update_details.php', {update_as_dg: update_as_dg}, function (data) {
+                                    alert(data);
+                                }).complete(function () {
+                                    this_l.closest('tr').find('.wait_loader').hide(0);
+                                    view_link_txt.hide();
+                                    view_link_txt.parent('td').html('Approved');
+                                    if (who_approves == 'DAF') {
+                                        neightbor_link_hml.html("Waiting At DG's Office");
+                                    } else if (who_approves == 'DG') {
+                                        neightbor_link_hml.html('All approved');
+                                        alert('All approved');
+                                    }
+                                });
+                            } else {
+
+                                $.post('../admin/handler_update_details.php', {approve_link: approve_link}, function (data) {
+                                }).complete(function () {
+                                    this_l.closest('tr').find('.wait_loader').hide(0);
+                                    view_link_txt.hide();
+                                    view_link_txt.parent('td').html('Approved');
+                                    if (who_approves == 'DAF') {
+                                        neightbor_link_hml.html("Waiting At DG's Office");
+                                    } else if (who_approves == 'DG') {
+                                        neightbor_link_hml.html('All approved');
+                                        alert('All approved');
+                                    }
+                                });
+                            }
+                        });
+                    } catch (err) {
+                        alert(err.message);
+                    }
+
+                    function display_status() {
+                        if (who_approves == 'DAF') {
+                            neightbor_link_hml.html("Waiting At DG's Office");
+                        } else if (who_approves == 'DG') {
+                            neightbor_link_hml.html('All approved');
+                            alert('All approved');
+                        }
+                    }</script>
                 <!--ending js-->
                 <div class="parts full_center_two_h heit_free margin_free details_box">
                     <div class="parts no_paddin_shade_no_Border no_shade_noBorder data_details_pane_title">
@@ -4773,24 +4805,21 @@
                     </div>
                     <div class="parts no_paddin_shade_no_Border no_shade_noBorder push_right data_details_pane_close_btn"></div>
                     <div class="parts  no_shade_noBorder data_details_pane_load">
-
                     </div>
                 </div>
-
                 <div class="clickable_row_table_box">  
                     <table class="dataList_table clickable_row_table">
                         <tr>  <td>Item</td> <td>unit cost</td>   <td>Quantity</td> <td>Entry Date</td> <td>User</td <td>Approve</td> </tr>
                         <?php while ($row = $stmt->fetch()) { ?>
                             <tr>
-                                <td><?php echo $row['item']; ?></td>
+                                <td><?php echo $row['item_name']; ?></td>
                                 <td><?php echo $row['unit_cost']; ?></td>
                                 <td><?php echo $row['quantity']; ?></td>
                                 <td><?php echo $row['entry_date']; ?></td>
-                                <td><?php echo $row['User']; ?></td>
-                                <td><a href="#">Approve</a></td>
+                                <td><?php echo $row['Firstname']."  ".$row['Lastname']; ?></td>
+                                <td style="background-color: #fff;"><div class="parts no_paddin_shade_no_Border wait_loader"> </div>   <a  href="#" style="color: #3c33d8;" data-bind="<?php echo $row['p_request_id']; ?>" class="details_approve_link push_left">Approve</a></td>
                             </tr>   
-                        <?php }
-                        ?></table>
+                        <?php } ?></table>
                 </div> <?php
             } catch (PDOException $e) {
                 echo 'Error .. ' . $e->getMessage();
