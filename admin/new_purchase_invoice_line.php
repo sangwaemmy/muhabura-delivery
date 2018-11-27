@@ -3,98 +3,84 @@
     require_once '../web_db/multi_values.php';
     if (!isset($_SESSION)) {
         session_start();
-    }if (!isset($_SESSION['login_token'])) {
+    }
+    if (!isset($_SESSION['login_token'])) {
         header('location:../index.php');
     }
-    if (isset($_POST['send_po'])) {
+    if (isset($_POST['send_purchase_invoice_line'])) {
         if (isset($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 require_once '../web_db/updates.php';
                 $upd_obj = new updates();
-                $purchase_order_line_id = $_SESSION['id_upd'];
+                $purchase_invoice_line_id = $_SESSION['id_upd'];
                 $entry_date = date("y-m-d");
                 $User = $_SESSION['userid'];
                 $quantity = $_POST['txt_quantity'];
                 $unit_cost = $_POST['txt_unit_cost'];
                 $amount = $_POST['txt_amount'];
-                $request = $_POST['txt_request_id'];
-                $measurement = $_POST['txt_measurement_id'];
-                $supplier = $_POST['txt_client_id'];
-                $upd_obj->update_purchase_order_line($entry_date, $User, $quantity, $unit_cost, $amount, $request, $measurement, $supplier, $purchase_order_line_id);
+                $purchase_order = $_POST['txt_purchase_order_id'];
+                $activity = $_POST['txt_activity_id'];
+                $upd_obj->update_purchase_invoice_line($entry_date, $User, $quantity, $unit_cost, $amount, $purchase_order, $activity, $purchase_invoice_line_id);
                 unset($_SESSION['table_to_update']);
             }
         } else {
-            require_once '../web_db/new_values.php';
-            $quantity = $_POST['txt_quantity'];
-            $unit_c = $_POST['txt_unit_cost'];
-            $items = $_POST['txt_itemid'];
-            $supplier = $_POST['suppliers_cbo'];
-            $requestid = $_POST['txt_requestid'];
-
-            $index_item = new ArrayIterator($items);
-            $index_quantity = new ArrayIterator($quantity);
-            $index_unit_c = new ArrayIterator($unit_c);
-            $index_supplier = new ArrayIterator($supplier);
-            $index_requestid = new ArrayIterator($requestid);
-
-            $mit = new MultipleIterator(MultipleIterator::MIT_KEYS_ASSOC);
-            $mit->attachIterator($index_item, "Item");
-//            $mit->attachIterator($index_measurement, "measurement");
-            $mit->attachIterator($index_quantity, "quantity");
-            $mit->attachIterator($index_unit_c, "unit_c");
-            $mit->attachIterator($index_supplier, "suplier");
-            $mit->attachIterator($index_requestid, "requestid");
-
-            $entry_date = date('y-m-d h:m:s');
+            $entry_date = date("y-m-d h:m:s");
             $User = $_SESSION['userid'];
+            $quantity = $_POST['txt_quantity'];
+            $unit_cost = filter_input(INPUT_POST, 'txt_unit_cost', FILTER_SANITIZE_NUMBER_INT);
+            $amount = filter_input(INPUT_POST, 'txt_amount', FILTER_SANITIZE_NUMBER_INT);
+            $purchase_order = trim($_POST['txt_purchase_order_id']);
+            $activity = trim($_POST['txt_activity_id']);
+            $expense_cbo = trim($_POST['expense_cbo']);
+            $cash_cbo = trim($_POST['asset_cbo']);
+            $supplier = trim($_POST['txt_supplier_id']);
+            $tot = $unit_cost * $quantity;
+            require_once '../web_db/new_values.php';
             $obj = new new_values();
-            foreach ($mit as $fruit) {
-                $dc = json_decode(json_encode($fruit), true);
-                foreach ($dc as $val) {
-                    if (!empty($dc['Item'])) {
-                        $item = $dc['Item'];
-                        $quantity = (!empty($dc['quantity'])) ? $dc['quantity'] : 0;
-                        $unit_c = (!empty($dc['unit_c'])) ? $dc['unit_c'] : 0;
-                        $amount = $unit_c * $quantity;
-                        $requestid = $dc['requestid'];
-                        $supplier = $dc['suplier'];
-                        $obj->new_purchase_order_line($entry_date, $User, filter_var($quantity, FILTER_SANITIZE_NUMBER_INT), filter_var($unit_c, FILTER_SANITIZE_NUMBER_INT), filter_var($amount, FILTER_SANITIZE_NUMBER_INT), $requestid, 0, $supplier);
-                        break;
-                    }
-                }
+            $tax_inclusive = (filter_input(INPUT_POST, 'chk_tax_inc')) ? 'yes' : 'no';
+            $obj->new_purchase_invoice_line($entry_date, $User, $quantity, $unit_cost, filter_var($tot, FILTER_SANITIZE_NUMBER_INT), $purchase_order, $activity, $expense_cbo, $supplier, $tax_inclusive, $cash_cbo);
+//            now save the account payable in the journal;
+
+            $obj->new_journal_entry_header($supplier, 'supplier', $entry_date, "Purchasing", 0, 'yes');
+            $m = new multi_values();
+            $last_head = $m->get_last_journal_entry_header();
+
+            $pay_method = (filter_input(INPUT_POST, 'rd_bank_cash') == 'Bank') ? 'not reconciled' : 'neutral';
+            $obj->new_journal_entry_line($expense_cbo, 'Debit', $tot, "Expenses incurred on purchase", $last_head, date('y-m-d h:m:s'), "purchase", "neutral", $activity, $User);
+            $obj->new_journal_entry_line($cash_cbo, 'credit', $tot, "Cash out on fom cash bank on purchase", $last_head, date('y-m-d h:m:s'), "purchase", $pay_method, $activity, $User);
+            if (!empty($tax_inclusive)) {
+                $percentage = filter_input(INPUT_POST, 'txt_percentage');
+                $amount = $tot / 1.18;
+                $m = new multi_values();
+                $lat_purchase = $m->get_last_purchase_invoice_line();
+                $vat_amount = $amount;
+                $pur_sale = 'sale';
+//                $obj->new_vat($Total_val_of_Sup, $exempted_sales, $exports, $total_not_taxable, $taxable_sales_sub_vat, $vat_on_taxable_sales, $vat_reversecharge, $vat_payable, $vat_paid_on_imports, $vat_paidon_local_pur, $vat_rev_char_deduct, $vat_pay_cre_ref, $vat_with_hold_pub, $vat_due_cred_pay, $vat_refund, $vat_due);
+                $obj->new_vat_calculation($lat_purchase, $vat_amount, $entry_date, $User, 0, $pur_sale);
             }
-            ?><script>alert('The purchase order Saved successfully');</script><?php
-//            $obj = new new_values();
-//            $obj->new_purchase_order_line($entry_date, $User, $quantity, filter_var($unit_cost, FILTER_SANITIZE_NUMBER_INT), filter_var($amount, FILTER_SANITIZE_NUMBER_INT), $request, $measurement, $supplier);
+        }
     }
-}
 ?>
 
 <html>
     <head>
         <meta charset="UTF-8">
         <title>
-            Purchase Order</title>
+            purchase_invoice_line
+        </title>
         <link href="web_style/styles.css" rel="stylesheet" type="text/css"/>
         <link href="web_style/StylesAddon.css" rel="stylesheet" type="text/css"/>
-        <link href="admin_style.css" rel="stylesheet" type="text/css"/> 
-        <meta name="viewport" content="width=device-width, initial scale=1.0"/>
-        <link rel="shortcut icon" href="../web_images/tab_icon.png" type="image/x-icon"> 
+        <link href="admin_style.css" rel="stylesheet" type="text/css"/> <meta name="viewport" content="width=device-width, initial scale=1.0"/>
     </head>
     <body>
-<?php
-    include 'admin_header.php';
-?>
-
-        <!--Start of Purcahse order Details-->
+        <?php
+            include 'admin_header.php';
+        ?>
+        <!--Start of Type Details-->
         <div class="parts p_project_type_details data_details_pane abs_full margin_free white_bg">
-            <div class="parts fifty_centered no_paddin_shade_no_Border heit_free add_load_gif">.</div> 
-            <div class="parts no_paddin_shade_no_Border data_res full_center_two_h heit_free">
 
-            </div>
         </div>
-
-        <!--End Purchase Details-->   
+        <!--End Tuype Details-->   
         <!--Start of opening Type project Pane(The pane that allow the user to add the data in a different table without leaving the current one)-->
         <div class="parts abs_full eighty_centered onfly_pane_p_type_project">
             <div class="parts  full_center_two_h heit_free">
@@ -102,8 +88,7 @@
                     <table class="new_data_table" >
                         <thead>Add new Budget Line</thead>
                         <tr>
-                            <td>Name</td> <td>
-                                <input type="text"  class="textbox"  id="onfly_txt_name" />  </td>
+                            <td>Name</td> <td><input type="text"  class="textbox"  id="onfly_txt_name" />  </td>
                         </tr>
                         <tr>
                             <td colspan="2">                                
@@ -137,137 +122,156 @@
             </div>  
         </div>
         <!--End of opening Pane-->
-
         <div class="parts eighty_centered no_paddin_shade_no_Border">  
-            <div class="parts  no_paddin_shade_no_Border new_data_hider"> Add Purchase Order </div>
+            <div class="parts  no_paddin_shade_no_Border new_data_hider"> Add Purchase Invoice   </div>
             <div class="parts no_paddin_shade_no_Border page_search link_cursor">Search</div>
         </div>
         <div class="parts eighty_centered off saved_dialog">
-            purchase_order_line saved successfully!</div>
+            purchase_invoice_line saved successfully!</div>
         <div class="parts eighty_centered new_data_box off">
-            <div class="parts eighty_centered off">  purchase order  </div>
-<?php ?>
-            <form action="new_purchase_order_line.php" method="post" enctype="multipart/form-data">
-                <input type="hidden" style="float: right;" id="txt_shall_expand_toUpdate" value="<?php echo (isset($_SESSION['table_to_update'])) ? trim($_SESSION['table_to_update']) : '' ?>" />
-                <!--this field  (shall_expand_toUpdate)above is for letting the form expand using js for updating-->
-                <input type="hidden" style="float: right" id="txt_measurement_id"   name="txt_measurement_id"/>
-                <input type="hidden" id="txt_pur_order_header_id"   name="txt_pur_order_header_id"/>
-                <input type="hidden" id="txt_item_id"   name="txt_item_id"/>
-                <input type="hidden" class="push_right"  id="txt_request_id"   name="txt_request_id"/>
-                <input type="hidden" id="txt_supplier_id"   name="txt_supplier_id"/>
-                <input type="hidden" id="txt_client_id"   name="txt_client_id"/>
-                <input type="hidden" id="txt_cbo_main_request_id"   name="txt_cbo_main_request_id"/>
-                <input type="hidden"  id="txt_p_type_project_id"    name="txt_type_project_id"/>
+            <div class="parts eighty_centered ">  purchase invoice </div>
 
-                <table class="new_data_table off new_po_hidable rehide">
-                    <tr><td class="new_data_tb_frst_cols">Request </td><td> <?php get_request_combo(); ?>  </td></tr>
+            <form action="new_purchase_invoice_line.php" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="txt_shall_expand_toUpdate" value="<?php echo (isset($_SESSION['table_to_update'])) ? trim($_SESSION['table_to_update']) : '' ?>" />
+                <!--this field  (shall_expand_toUpdate)above is for letting the form expand using js for updating-->
+                <input type="hidden" id="txt_item_id"   name="txt_item_id"/><input type="hidden" id="txt_measurement_id"   name="txt_measurement_id"/>
+                <input type="hidden" id="txt_pur_invoice_header_id"   name="txt_pur_invoice_header_id"/>
+                <input type="hidden" id="txt_pur_order_line_id"   name="txt_pur_order_line_id"/>
+                <input type="hidden" id="txt_inventory_control_journal_id"   name="txt_inventory_control_journal_id"/>
+                <input type="hidden" id="txt_purchase_order_id"   name="txt_purchase_order_id"/>
+                <input type="hidden" id="txt_measurement_id"   name="txt_measurement_id"/>
+                <input type="hidden" id="txt_pur_order_line_id"   name="txt_pur_order_line_id"/>
+                <input type="hidden" id="txt_inventory_control_journal_id"   name="txt_inventory_control_journal_id"/>
+                <input type="hidden" id="txt_activity_id"   name="txt_activity_id"/>
+                <input type="hidden" id="txt_account_id"   name="txt_account_id"/>
+                <input type="hidden"   id="txt_supplier_id"   name="txt_supplier_id"/>
+                <input type="hidden"  id="txt_p_type_project_id"    name="txt_type_project_id"/>
+                <table class="new_data_table  rehide">
+
+
+                    <tr class="off">
+                        <td>Select Year</td>
+                        <td><?php get_fisc_year_combo(); ?></td>
+                    </tr>
+                    <tr><td class="new_data_tb_frst_cols">Budget line </td><td> <?php get_type_project_combo(); ?>  </td></tr> 
                     <tr>
-                        <td colspan="2">
-                            <span class="req_res"> </span>
+                        <td>Project</td><td>
+                            <select class="textbox cbo_fill_projects cbo_onfly_p_project_change">
+                                <option> --Projects--</option>
+                            </select>  
                         </td>
                     </tr>
+                    <tr>
+                        <td>Select the Activity</td>
+                        <td> <select class="textbox tobe_refilled cbo_fill_activity  cbo_onfly_p_activity_change">
+                                <option> --Add new --</option>
+                            </select>  
+                        </td>
+                    </tr>
+                    <tr><td class="new_data_tb_frst_cols">Supplier </td><td> <?php get_supplier_combo(); ?>  </td></tr>
+                    <tr><td class="new_data_tb_frst_cols">Account </td><td>
+                            <table class="margin_free">
+                                <tr><td>Assets (Debit)</td><td>Bank/Cash at hand (Credit)</td></tr>
+                                <tr><td> <?php get_expenses_combo(); ?></td><td><?php get_asset_combo(); ?> </td></tr>
+                            </table>
+                            <br/>
+                        </td></tr>
+                    <tr><td class="new_data_tb_frst_cols"><label for="chk_tax_inc">Is tax inclusive</label> </td><td> <input type="checkbox"id="chk_tax_inc" name="chk_tax_inc" />  </td></tr>
+                    <tr>
+                        <td>Payment method</td><td> 
+                            <input type="radio" name="rd_bank_cash" class="push_left" id="rd_bank"><label for="rd_bank" class="push_left">Bank </label>
+                            <input type="radio" name="rd_bank_cash" class="push_left" id="rd_cash"><label for="rd_cash" class="push_left">Cash </label>
+                        </td>
+                    </tr>
+                    <tr><td class="new_data_tb_frst_cols">Purchase Order </td><td> <?php get_purchase_order_line(); ?>  </td></tr>
 
-                </table>  
+                    <tr>
+                        <td colspan="2">
+                            <span class="parts no_paddin_shade_no_Border load_res off"></span>
+                            <div class="parts continuous_res no_paddin_shade_no_Border ">
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr><td colspan="2">
+                            <input type="submit" class="confirm_buttons" name="send_purchase_invoice_line" value="Save"/> 
+                            <button class="back_wiz push_right">Back</button>
+                        </td></tr>
+                </table>
             </form> 
-            <table class="new_data_table selectable_table ">
-                <tr class="off">
-                    <td>Select Year</td>
-                    <td><?php get_fisc_year_combo(); ?></td>
-                </tr>
-                <tr><td class="new_data_tb_frst_cols">Budget line </td><td> <?php get_type_project_combo(); ?>  </td></tr> 
-                <tr>
-                    <td>Project</td><td>
-                        <select class="textbox cbo_fill_projects cbo_onfly_p_project_change">
-                            <option> --Projects--</option>
-                        </select>  
-                    </td>
-                </tr>
-                <tr>
-                    <td>Select the Activity</td>
-                    <td> <select class="textbox tobe_refilled cbo_fill_activity  cbo_onfly_p_activity_change">
-                            <option> --Add new --</option>
-                        </select>  
-                    </td>
-                </tr>
-                <tr>
-                    <td> </td> <td>
-                        <div class="parts confirm_buttons  new_select_po link_cursor">Select</div>
-                        <input type="submit" class="confirm_buttons select_activity_purchase_order_line off" id="selct_f_year" value="Select" /> </td>
-                </tr>
-            </table>
         </div>
+
         <div class="parts eighty_centered datalist_box" >
-            <div class="parts no_shade_noBorder xx_titles no_bg whilte_text">All purchase orders </div>
-            
-            <div class="parts no_paddin_shade_no_Border page_pane" id="page_pane1">1</div>
-            <div class="parts no_paddin_shade_no_Border page_pane off" id="page_pane2">2</div>
-<?php
-    // <editor-fold defaultstate="collapsed" desc="--paging init---">
-    if (isset($_POST['prev'])) {
-        $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] -= 1);
-        $last = ($_SESSION['page'] > 1) ? $_SESSION['page'] * 30 : 30;
-        $first = $last - 30;
-    } else if (isset($_POST['page_level'])) {//this is next
-        $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] += 1);
-        $last = $_SESSION['page'] * 30;
-        $first = $last - 30;
-    } else if (isset($_SESSION['page']) && isset($_POST['paginated']) && $_SESSION['page'] > 0) {// the use is on another page(other than the first) and clicked the page inside
-        $last = $_POST['paginated'] * 30;
-        $first = $last - 30;
-    } else if (isset($_POST['paginated']) && $_SESSION['page'] = 0) {
-        $first = 0;
-    } else if (isset($_POST['paginated'])) {
-        $last = $_POST['paginated'] * 30;
-        $first = $last - 30;
-    } else if (isset($_POST['first'])) {
-        $_SESSION['page'] = 1;
-        $first = 0;
-    } else {
-        $first = 0;
-    }
+            <div class="parts no_shade_noBorder xx_titles no_bg whilte_text">purchase invoice  List</div>
+            <?php
+                // <editor-fold defaultstate="collapsed" desc="--paging init---">
+                if (isset($_POST['prev'])) {
+                    $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] -= 1);
+                    $last = ($_SESSION['page'] > 1) ? $_SESSION['page'] * 30 : 30;
+                    $first = $last - 30;
+                } else if (isset($_POST['page_level'])) {//this is next
+                    $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] += 1);
+                    $last = $_SESSION['page'] * 30;
+                    $first = $last - 30;
+                } else if (isset($_SESSION['page']) && isset($_POST['paginated']) && $_SESSION['page'] > 0) {// the use is on another page(other than the first) and clicked the page inside
+                    $last = $_POST['paginated'] * 30;
+                    $first = $last - 30;
+                } else if (isset($_POST['paginated']) && $_SESSION['page'] = 0) {
+                    $first = 0;
+                } else if (isset($_POST['paginated'])) {
+                    $last = $_POST['paginated'] * 30;
+                    $first = $last - 30;
+                } else if (isset($_POST['first'])) {
+                    $_SESSION['page'] = 1;
+                    $first = 0;
+                } else {
+                    $first = 0;
+                }
 
 // </editor-fold>
-    $obj = new multi_values();
-    $first = $obj->get_first_purchase_order_line();
-    $obj->list_purchase_order_line();
-    ?>
+                $obj = new multi_values();
+                $other = new other_fx();
+                $first = $obj->get_first_purchase_invoice_line();
+                //start this year
+                $start_year = date('Y');
+                $start_month = '0' . 1;
+                $start_date = '0' . 1;
+
+                //End this year
+                $end_year = date('Y');
+                $end_month = date('m');
+                $end_date = date('d');
+//                echo $start_year . '-' . $start_month . '-' . $start_date;
+                echo $other->get_this_year_start_date() . ' - ' . $other->get_this_year_end_date();
+                $obj->list_purchase_invoice_line($first);
+            ?>
         </div> 
-
-        <div class="parts no_paddin_shade_no_Border eighty_centered no_bg">
-            <table>
-                <td>
-                    <form action="../web_exports/excel_export.php" method="post">
-                        <input type="hidden" name="purchase_order_line" value="a"/>
-                        <input type="submit" name="export" class="btn_export btn_export_excel" value="Export"/>
-                    </form>
-                </td>
-                <td>
-                    <form action="../prints/print_purchase_order_line.php"target="blank" method="post">
-                        <input type="submit" name="export" class="btn_export btn_export_pdf" value="Export"/>
-                    </form>
-                </td>
-            </table>
-        </div>
         <div class="parts eighty_centered  no_paddin_shade_no_Border no_shade_noBorder check_loaded" >
-<?php require_once './navigation/add_nav.php'; ?> 
+            <?php require_once './navigation/add_nav.php'; ?> 
         </div>
-
         <script src="../web_scripts/jquery-2.1.3.min.js" type="text/javascript"></script>
-        <script src="admin_script.js" type="text/javascript"></script> 
+        <script src="admin_script.js" type="text/javascript"></script>  
         <script src="../web_scripts/web_scripts.js" type="text/javascript"></script>
-        <script>
-                $(document).ready(function () {
-                    $('.new_select_po').click(function () {//this is hiding the first pane, afterwards it show the next pane
-                        $('.selectable_table').hide(200, function () {
-                            $('.new_po_hidable').slideDown(200);
-                        });
-                    });
-                });
 
-        </script>
         <div class="parts full_center_two_h heit_free footer"> Copyrights <?php echo '2018 - ' . date("Y") . ' MUHABURA MULTICHOICE COMPANY LTD Version 1.0' ?></div>
     </body>
 </hmtl>
+<div class="parts  eighty_centered no_paddin_shade_no_Border no_bg margin_free export_btn_box">
+    <table class="margin_free">
+        <td>
+            <form action="../web_exports/excel_export.php" method="post">
+                <input type="hidden" name="purchase_invoice_line" value="a"/>
+                <input type="submit" name="export" class="btn_export btn_export_excel" value="Export"/>
+            </form>
+        </td>
+        <td>
+            <form action="../prints/print_purchase_invoice_line.php"target="blank" method="post">
+                <input type="submit" name="export" class="btn_export btn_export_pdf" value="Export"/>
+            </form>
+        </td>
+    </table>
+</div>
+
 <?php
 
     function get_supplier_combo() {
@@ -275,9 +279,20 @@
         $obj->get_supplier_in_combo();
     }
 
-    function get_fisc_year_combo() {
+    function get_expenses_combo() {
         $obj = new multi_values();
-        $obj->get_fisc_year_in_combo();
+        $obj->get_expenses_sml_cbo();
+    }
+
+    function get_asset_combo() {
+        $obj = new multi_values();
+        $obj->get_asset_sml_cbo();
+    }
+
+    function get_purchase_order_line() {
+        require_once '../web_db/other_fx.php';
+        $other = new other_fx();
+        $other->get_purchase_order_in_combo();
     }
 
     function get_type_project_combo() {
@@ -285,19 +300,14 @@
         $obj->get_type_project_in_combo();
     }
 
-    function get_request_combo() {
+    function get_fisc_year_combo() {
         $obj = new multi_values();
-        $obj->get_main_req_in_combo();
+        $obj->get_fisc_year_in_combo();
     }
 
     function get_project_combo() {
         $obj = new multi_values();
         $obj->get_project_in_combo_refill();
-    }
-
-    function get_pur_order_header_combo() {
-        $obj = new multi_values();
-        $obj->get_pur_order_header_in_combo();
     }
 
     function get_item_combo() {
@@ -310,26 +320,27 @@
         $obj->get_measurement_in_combo();
     }
 
-    function chosen_pur_order_header_upd() {
-        if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
-                $id = $_SESSION['id_upd'];
-                $pur_order_header = new multi_values();
-                return $pur_order_header->get_chosen_purchase_order_line_pur_order_header($id);
-            } else {
-                return '';
-            }
-        } else {
-            return '';
-        }
+    function get_pur_invoice_header_combo() {
+        $obj = new multi_values();
+        $obj->get_pur_invoice_header_in_combo();
+    }
+
+    function get_pur_order_line_combo() {
+        $obj = new multi_values();
+        $obj->get_pur_order_line_in_combo();
+    }
+
+    function get_inventory_control_journal_combo() {
+        $obj = new multi_values();
+        $obj->get_inventory_control_journal_in_combo();
     }
 
     function chosen_item_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
                 $item = new multi_values();
-                return $item->get_chosen_purchase_order_line_item($id);
+                return $item->get_chosen_purchase_invoice_line_item($id);
             } else {
                 return '';
             }
@@ -340,10 +351,10 @@
 
     function chosen_measurement_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
                 $measurement = new multi_values();
-                return $measurement->get_chosen_purchase_order_line_measurement($id);
+                return $measurement->get_chosen_purchase_invoice_line_measurement($id);
             } else {
                 return '';
             }
@@ -352,12 +363,12 @@
         }
     }
 
-    function chosen_quanitity_upd() {
+    function chosen_pur_invoice_header_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
-                $quanitity = new multi_values();
-                return $quanitity->get_chosen_purchase_order_line_quanitity($id);
+                $pur_invoice_header = new multi_values();
+                return $pur_invoice_header->get_chosen_purchase_invoice_line_pur_invoice_header($id);
             } else {
                 return '';
             }
@@ -368,10 +379,10 @@
 
     function chosen_cost_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
                 $cost = new multi_values();
-                return $cost->get_chosen_purchase_order_line_cost($id);
+                return $cost->get_chosen_purchase_invoice_line_cost($id);
             } else {
                 return '';
             }
@@ -382,10 +393,10 @@
 
     function chosen_discount_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
                 $discount = new multi_values();
-                return $discount->get_chosen_purchase_order_line_discount($id);
+                return $discount->get_chosen_purchase_invoice_line_discount($id);
             } else {
                 return '';
             }
@@ -396,10 +407,10 @@
 
     function chosen_quantity_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
                 $quantity = new multi_values();
-                return $quantity->get_chosen_purchase_order_line_quantity($id);
+                return $quantity->get_chosen_purchase_invoice_line_quantity($id);
             } else {
                 return '';
             }
@@ -410,10 +421,10 @@
 
     function chosen_unit_cost_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
                 $unit_cost = new multi_values();
-                return $unit_cost->get_chosen_purchase_order_line_unit_cost($id);
+                return $unit_cost->get_chosen_purchase_invoice_line_unit_cost($id);
             } else {
                 return '';
             }
@@ -424,10 +435,52 @@
 
     function chosen_amount_upd() {
         if (!empty($_SESSION['table_to_update'])) {
-            if ($_SESSION['table_to_update'] == 'purchase_order_line') {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
                 $id = $_SESSION['id_upd'];
                 $amount = new multi_values();
-                return $amount->get_chosen_purchase_order_line_amount($id);
+                return $amount->get_chosen_purchase_invoice_line_amount($id);
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
+
+    function chosen_pur_order_line_upd() {
+        if (!empty($_SESSION['table_to_update'])) {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
+                $id = $_SESSION['id_upd'];
+                $pur_order_line = new multi_values();
+                return $pur_order_line->get_chosen_purchase_invoice_line_pur_order_line($id);
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
+
+    function chosen_inventory_control_journal_upd() {
+        if (!empty($_SESSION['table_to_update'])) {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
+                $id = $_SESSION['id_upd'];
+                $inventory_control_journal = new multi_values();
+                return $inventory_control_journal->get_chosen_purchase_invoice_line_inventory_control_journal($id);
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
+
+    function chosen_received_quantity_upd() {
+        if (!empty($_SESSION['table_to_update'])) {
+            if ($_SESSION['table_to_update'] == 'purchase_invoice_line') {
+                $id = $_SESSION['id_upd'];
+                $received_quantity = new multi_values();
+                return $received_quantity->get_chosen_purchase_invoice_line_received_quantity($id);
             } else {
                 return '';
             }
