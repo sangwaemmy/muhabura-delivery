@@ -33,6 +33,20 @@
             <?php
         }
 
+         function get_purchase_order_line_smenu() {
+            ?>
+            <div class="parts full_center_two_h heit_free margin_free no_paddin_shade_no_Border">
+                <div class="parts no_paddin_shade_no_Border smenu_item margin_free" id="smenu1">
+                    Approved Purchase orders
+                </div>
+                <div class="parts no_paddin_shade_no_Border smenu_item margin_free" id="smenu2">
+                    Pending Purchase Order
+                </div>
+            </div> 
+            <?php
+        }
+
+
         function get_request() {
             ?> 
             <div class="parts full_center_two_h heit_free margin_free no_paddin_shade_no_Border">
