@@ -66,8 +66,8 @@
             ?><script>alert('The purchase order Saved successfully');</script><?php
 //            $obj = new new_values();
 //            $obj->new_purchase_order_line($entry_date, $User, $quantity, filter_var($unit_cost, FILTER_SANITIZE_NUMBER_INT), filter_var($amount, FILTER_SANITIZE_NUMBER_INT), $request, $measurement, $supplier);
+        }
     }
-}
 ?>
 
 <html>
@@ -82,9 +82,9 @@
         <link rel="shortcut icon" href="../web_images/tab_icon.png" type="image/x-icon"> 
     </head>
     <body>
-<?php
-    include 'admin_header.php';
-?>
+        <?php
+            include 'admin_header.php';
+        ?>
 
         <!--Start of Purcahse order Details-->
         <div class="parts p_project_type_details data_details_pane abs_full margin_free white_bg">
@@ -146,7 +146,7 @@
             purchase_order_line saved successfully!</div>
         <div class="parts eighty_centered new_data_box off">
             <div class="parts eighty_centered off">  purchase order  </div>
-<?php ?>
+            <?php ?>
             <form action="new_purchase_order_line.php" method="post" enctype="multipart/form-data">
                 <input type="hidden" style="float: right;" id="txt_shall_expand_toUpdate" value="<?php echo (isset($_SESSION['table_to_update'])) ? trim($_SESSION['table_to_update']) : '' ?>" />
                 <!--this field  (shall_expand_toUpdate)above is for letting the form expand using js for updating-->
@@ -198,39 +198,38 @@
         </div>
         <div class="parts eighty_centered datalist_box" >
             <div class="parts no_shade_noBorder xx_titles no_bg whilte_text">All purchase orders </div>
-            
-            <div class="parts no_paddin_shade_no_Border page_pane" id="page_pane1">1</div>
-            <div class="parts no_paddin_shade_no_Border page_pane off" id="page_pane2">2</div>
-<?php
-    // <editor-fold defaultstate="collapsed" desc="--paging init---">
-    if (isset($_POST['prev'])) {
-        $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] -= 1);
-        $last = ($_SESSION['page'] > 1) ? $_SESSION['page'] * 30 : 30;
-        $first = $last - 30;
-    } else if (isset($_POST['page_level'])) {//this is next
-        $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] += 1);
-        $last = $_SESSION['page'] * 30;
-        $first = $last - 30;
-    } else if (isset($_SESSION['page']) && isset($_POST['paginated']) && $_SESSION['page'] > 0) {// the use is on another page(other than the first) and clicked the page inside
-        $last = $_POST['paginated'] * 30;
-        $first = $last - 30;
-    } else if (isset($_POST['paginated']) && $_SESSION['page'] = 0) {
-        $first = 0;
-    } else if (isset($_POST['paginated'])) {
-        $last = $_POST['paginated'] * 30;
-        $first = $last - 30;
-    } else if (isset($_POST['first'])) {
-        $_SESSION['page'] = 1;
-        $first = 0;
-    } else {
-        $first = 0;
-    }
+            <?php
+                    $menu = new extra_sub_menus();
+                    $menu->purchase_order_line_smenu();
+                // <editor-fold defaultstate="collapsed" desc="--paging init---">
+                if (isset($_POST['prev'])) {
+                    $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] -= 1);
+                    $last = ($_SESSION['page'] > 1) ? $_SESSION['page'] * 30 : 30;
+                    $first = $last - 30;
+                } else if (isset($_POST['page_level'])) {//this is next
+                    $_SESSION['page'] = ($_SESSION['page'] < 1) ? 1 : ($_SESSION['page'] += 1);
+                    $last = $_SESSION['page'] * 30;
+                    $first = $last - 30;
+                } else if (isset($_SESSION['page']) && isset($_POST['paginated']) && $_SESSION['page'] > 0) {// the use is on another page(other than the first) and clicked the page inside
+                    $last = $_POST['paginated'] * 30;
+                    $first = $last - 30;
+                } else if (isset($_POST['paginated']) && $_SESSION['page'] = 0) {
+                    $first = 0;
+                } else if (isset($_POST['paginated'])) {
+                    $last = $_POST['paginated'] * 30;
+                    $first = $last - 30;
+                } else if (isset($_POST['first'])) {
+                    $_SESSION['page'] = 1;
+                    $first = 0;
+                } else {
+                    $first = 0;
+                }
 
 // </editor-fold>
-    $obj = new multi_values();
-    $first = $obj->get_first_purchase_order_line();
-    $obj->list_purchase_order_line();
-    ?>
+                $obj = new multi_values();
+                $first = $obj->get_first_purchase_order_line();
+                $obj->list_purchase_order_line();
+            ?>
         </div> 
 
         <div class="parts no_paddin_shade_no_Border eighty_centered no_bg">
@@ -249,7 +248,7 @@
             </table>
         </div>
         <div class="parts eighty_centered  no_paddin_shade_no_Border no_shade_noBorder check_loaded" >
-<?php require_once './navigation/add_nav.php'; ?> 
+            <?php require_once './navigation/add_nav.php'; ?> 
         </div>
 
         <script src="../web_scripts/jquery-2.1.3.min.js" type="text/javascript"></script>
